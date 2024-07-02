@@ -1,17 +1,15 @@
 //! A version 1 data frame.
 
-use crate::types::{ConstTypeInformation, RuntimeTypeInformation, SensorType, ValueType};
+use crate::types::{
+    AccelerometerI16, ConstTypeInformation, RuntimeTypeInformation, SensorType, ValueType,
+};
 use crate::versions::Version1;
 use crate::DataFrame;
 use bincode::{Decode, Encode};
 
 /// A sensor data frame.
-#[derive(Encode, Debug, Clone, Eq, PartialEq)]
-pub struct Version1DataFrame<T>
-where
-    T: ConstTypeInformation,
-    T::Target: Decode,
-{
+#[derive(Encode, Debug, Clone, PartialEq)]
+pub struct Version1DataFrame {
     /// A sequence identifier, monotonically increasing.
     ///
     /// This value can be used to detect package loss on the receiver side. It should increase
@@ -36,22 +34,14 @@ where
     pub sensor_tag: u16,
 
     /// The sensor reading.
-    pub value: T::Target,
+    pub value: Version1Data,
 }
 
-impl<T> DataFrame for Version1DataFrame<T>
-where
-    T: ConstTypeInformation,
-    T::Target: Decode,
-{
+impl DataFrame for Version1DataFrame {
     type ProtocolVersion = Version1;
 }
 
-impl<T> ::bincode::Decode for Version1DataFrame<T>
-where
-    T: ConstTypeInformation,
-    T::Target: Decode,
-{
+impl ::bincode::Decode for Version1DataFrame {
     fn decode<__D: bincode::de::Decoder>(
         decoder: &mut __D,
     ) -> Result<Self, bincode::error::DecodeError> {
@@ -65,6 +55,7 @@ where
 }
 
 /// Data formats.
+#[derive(Debug, Clone, PartialEq)]
 pub enum Version1Data {
     ProtocolVersion(crate::types::ProtocolVersion),
     SystemClockFrequency(crate::types::SystemClockFrequency),
@@ -107,7 +98,7 @@ impl RuntimeTypeInformation for Version1Data {
         }
     }
 
-    fn num_components(&self) -> usize {
+    fn num_components(&self) -> u8 {
         match self {
             Version1Data::ProtocolVersion(_) => crate::types::ProtocolVersion::NUM_COMPONENTS,
             Version1Data::SystemClockFrequency(_) => {
@@ -144,5 +135,14 @@ impl bincode::Encode for Version1Data {
         }
 
         Ok(())
+    }
+}
+
+impl ::bincode::Decode for Version1Data {
+    fn decode<__D: bincode::de::Decoder>(
+        decoder: &mut __D,
+    ) -> Result<Self, ::bincode::error::DecodeError> {
+        let v: u8 = bincode::Decode::decode(decoder)?;
+        todo!()
     }
 }

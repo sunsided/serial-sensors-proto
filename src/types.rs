@@ -55,7 +55,7 @@ pub trait ConstTypeInformation: Default + Encode {
     /// The field type.
     const FIELD: ValueType;
     /// The number of components of the vector.
-    const NUM_COMPONENTS: usize;
+    const NUM_COMPONENTS: u8;
 
     /// The fundamental type used to represent the information.
     type Target: bincode::Encode;
@@ -70,7 +70,7 @@ pub trait RuntimeTypeInformation {
     fn field(&self) -> ValueType;
 
     /// The number of components
-    fn num_components(&self) -> usize;
+    fn num_components(&self) -> u8;
 }
 
 macro_rules! impl_type {
@@ -121,7 +121,7 @@ macro_rules! impl_type {
         impl $crate::types::ConstTypeInformation for $type {
             const SENSOR: $crate::types::SensorType = $sensor;
             const FIELD: $crate::types::ValueType = $value;
-            const NUM_COMPONENTS: usize = $num_components;
+            const NUM_COMPONENTS: u8 = $num_components;
             type Target = $base_type;
         }
 
@@ -140,7 +140,7 @@ macro_rules! impl_type {
 
             /// The number of components
             #[inline]
-            fn num_components(&self) -> usize {
+            fn num_components(&self) -> u8 {
                 <Self as $crate::types::ConstTypeInformation>::NUM_COMPONENTS
             }
         }
@@ -150,7 +150,10 @@ macro_rules! impl_type {
                 &self,
                 encoder: &mut __E,
             ) -> core::result::Result<(), ::bincode::error::EncodeError> {
-                ::bincode::Encode::encode(&{ ($sensor) as u8 }, encoder)?;
+                bincode::Encode::encode(&(Self::SENSOR as u8), encoder)?;
+                bincode::Encode::encode(&(Self::FIELD as u8), encoder)?;
+                bincode::Encode::encode(&Self::NUM_COMPONENTS, encoder)?;
+                ::bincode::Encode::encode(&self.0, encoder)?;
                 Ok(())
             }
         }
@@ -164,6 +167,51 @@ macro_rules! impl_type {
         impl From<$type> for $base_type {
             fn from(value: $type) -> $base_type {
                 value.0
+            }
+        }
+
+        impl TryFrom<$crate::versions::Version1Data> for $type {
+            type Error = ();
+
+            fn try_from(value: $crate::versions::Version1Data) -> Result<Self, Self::Error> {
+                match value {
+                    $crate::versions::Version1Data::$type(value) => Ok(value),
+                    _ => Err(()),
+                }
+            }
+        }
+
+        impl TryFrom<$crate::versions::Version1DataFrame> for $type {
+            type Error = ();
+
+            fn try_from(value: $crate::versions::Version1DataFrame) -> Result<Self, Self::Error> {
+                match value.value {
+                    $crate::versions::Version1Data::$type(value) => Ok(value),
+                    _ => Err(()),
+                }
+            }
+        }
+
+        impl
+            TryFrom<
+                $crate::VersionedDataFrame<
+                    $crate::versions::Version1,
+                    $crate::versions::Version1DataFrame,
+                >,
+            > for $type
+        {
+            type Error = ();
+
+            fn try_from(
+                value: $crate::VersionedDataFrame<
+                    $crate::versions::Version1,
+                    $crate::versions::Version1DataFrame,
+                >,
+            ) -> Result<Self, Self::Error> {
+                match value.data.value {
+                    $crate::versions::Version1Data::$type(value) => Ok(value),
+                    _ => Err(()),
+                }
             }
         }
     };
