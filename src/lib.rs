@@ -84,12 +84,10 @@ mod tests {
 
     #[test]
     fn into_versioned() {
-        let frame = Version1DataFrame {
-            global_sequence: u32::MAX,
-            sensor_sequence: 12,
-            sensor_tag: 0,
-            value: AccelerometerI16::new(Vector3Data { x: 0, y: -1, z: 2 }).into(),
-        };
+        let frame = Version1DataFrame::new(u32::MAX,
+            12,
+            0,
+            AccelerometerI16::new(Vector3Data { x: 0, y: -1, z: 2 }));
 
         let versioned = frame.into_versioned();
         assert_eq!(versioned.version, Version1);

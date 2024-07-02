@@ -1,8 +1,6 @@
 //! A version 1 data frame.
 
-use crate::types::{
-    AccelerometerI16, ConstTypeInformation, RuntimeTypeInformation, SensorType, ValueType,
-};
+use crate::types::{ConstTypeInformation, RuntimeTypeInformation, SensorType, ValueType};
 use crate::versions::Version1;
 use crate::DataFrame;
 use bincode::{Decode, Encode};
@@ -39,6 +37,29 @@ pub struct Version1DataFrame {
 
 impl DataFrame for Version1DataFrame {
     type ProtocolVersion = Version1;
+}
+
+impl Version1DataFrame {
+    pub fn new<D>(global_sequence: u32, sensor_sequence: u32, sensor_tag: u16, value: D) -> Self
+    where
+        D: Into<Version1Data>,
+    {
+        Self::new_with(global_sequence, sensor_sequence, sensor_tag, value.into())
+    }
+
+    pub const fn new_with(
+        global_sequence: u32,
+        sensor_sequence: u32,
+        sensor_tag: u16,
+        value: Version1Data,
+    ) -> Self {
+        Self {
+            global_sequence,
+            sensor_sequence,
+            sensor_tag,
+            value,
+        }
+    }
 }
 
 impl ::bincode::Decode for Version1DataFrame {
