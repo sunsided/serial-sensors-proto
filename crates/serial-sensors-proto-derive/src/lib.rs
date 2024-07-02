@@ -44,6 +44,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
     let mut num_components_match_arms = Vec::new();
     let mut from_impls = Vec::new();
     let mut encode_match_arms = Vec::new();
+    let mut decode_match_arms = Vec::new();
 
     let mut sensor_types = HashSet::new();
     let mut duplicate_error = None;
@@ -101,6 +102,13 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
             encode_match_arms.push(quote! {
                 #name::#variant_name(value) => ::bincode::Encode::encode(&value, encoder)?,
             });
+
+            decode_match_arms.push(quote! {
+                (#sensor_type, #field_type) => {
+                    let value: #variant_field_type = ::bincode::Decode::decode(decoder)?;
+                    Ok(#name :: #variant_name ( value ))
+                }
+            });
         }
     }
 
@@ -108,6 +116,26 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
         error
     } else {
         quote! {
+            impl #name {
+                pub const fn sensor_type_id(&self) -> u8 {
+                    match self {
+                        #( #sensor_match_arms )*
+                    }
+                }
+
+                pub const fn value_type(&self) -> ::serial_sensors_proto_traits::ValueType {
+                    match self {
+                        #( #field_match_arms )*
+                    }
+                }
+
+                pub const fn num_components(&self) -> u8 {
+                    match self {
+                        #( #num_components_match_arms )*
+                    }
+                }
+            }
+
             impl ::serial_sensors_proto_traits::RuntimeTypeInformation2 for #name {
                 fn sensor_type_id(&self) -> u8 {
                     match self {
@@ -143,6 +171,20 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                         #( #encode_match_arms )*
                     }
                     Ok(())
+                }
+            }
+
+            impl ::bincode::Decode for #name {
+                fn decode<__D: bincode::de::Decoder>(
+                    decoder: &mut __D,
+                ) -> Result<Self, ::bincode::error::DecodeError> {
+                    let type_id: u8 = bincode::Decode::decode(decoder)?;
+                    let value_type: u8 = bincode::Decode::decode(decoder)?;
+                    let value_type = serial_sensors_proto_traits::ValueType::try_from(value_type).map_err(|_| ::bincode::error::DecodeError::Other("An unknown combination of type ID and value type was detected"))?;
+                    match (type_id, value_type) {
+                        #( #decode_match_arms )*,
+                        _ => Err(::bincode::error::DecodeError::Other("An unknown combination of type ID and value type was detected"))
+                    }
                 }
             }
         }

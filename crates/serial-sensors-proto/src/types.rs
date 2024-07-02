@@ -3,7 +3,7 @@ use serial_sensors_proto_traits::{SensorType, ValueType};
 macro_rules! impl_type {
     ($comment:literal, $type:tt, $sensor:expr, $value:expr, $num_components:literal, $base_type:ty) => {
         #[doc = $comment]
-        #[derive(Default, Debug, Copy, Clone, PartialEq)]
+        #[derive(::bincode::Encode, ::bincode::Decode, Default, Debug, Copy, Clone, PartialEq)]
         pub struct $type($base_type);
 
         impl $type {
@@ -69,20 +69,6 @@ macro_rules! impl_type {
             #[inline]
             fn num_components(&self) -> u8 {
                 <Self as ::serial_sensors_proto_traits::CompileTimeTypeInformation>::NUM_COMPONENTS
-            }
-        }
-
-        impl ::bincode::Encode for $type {
-            fn encode<__E: ::bincode::enc::Encoder>(
-                &self,
-                encoder: &mut __E,
-            ) -> core::result::Result<(), ::bincode::error::EncodeError> {
-                use serial_sensors_proto_traits::CompileTimeTypeInformation;
-                bincode::Encode::encode(&(Self::SENSOR as u8), encoder)?;
-                bincode::Encode::encode(&(Self::FIELD as u8), encoder)?;
-                bincode::Encode::encode(&Self::NUM_COMPONENTS, encoder)?;
-                ::bincode::Encode::encode(&self.0, encoder)?;
-                Ok(())
             }
         }
 

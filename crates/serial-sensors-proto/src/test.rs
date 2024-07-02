@@ -38,6 +38,7 @@ mod tests {
     use super::*;
     use crate::types::AccelerometerI16;
     use crate::vector3::Vector3Data;
+    use crate::SERIALIZATION_CONFIG;
     use serial_sensors_proto_traits::RuntimeTypeInformation2;
 
     #[test]
@@ -55,5 +56,39 @@ mod tests {
         assert_eq!(inner.x, 1);
         assert_eq!(inner.y, -2);
         assert_eq!(inner.z, 3);
+    }
+
+    #[test]
+    fn test_serialize() {
+        let value: Test = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }).into();
+
+        // The deserialization target buffer.
+        let mut buffer = [0_u8; 1024];
+
+        // Serialize the data
+        let num_serialized = bincode::encode_into_slice(value, &mut buffer, SERIALIZATION_CONFIG)
+            .expect("Failed to serialize");
+
+        // Ensure the serialized length is correct
+        assert_eq!(num_serialized, 2 + 3 * 2);
+
+        // Ensure the serialized content is correct
+        let expected_type_code = [0x42, 0x04];
+        assert_eq!(&buffer[..2], &expected_type_code);
+
+        // Deserialize the data
+        let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
+            .expect("Failed to deserialize");
+        let deserialized: Test = result.0;
+        let count = result.1;
+
+        // Ensure the deserialized content is correct
+        assert_eq!(deserialized.sensor_type_id(), 0x42);
+        assert_eq!(count, 2 + 3 * 2);
+
+        let into: AccelerometerI16 = deserialized.try_into().unwrap();
+        assert_eq!(into.x, 1);
+        assert_eq!(into.y, -2);
+        assert_eq!(into.z, 3);
     }
 }
