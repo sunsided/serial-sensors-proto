@@ -50,5 +50,10 @@ mod tests {
 
         let value: Test = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }).into();
         assert_eq!(instance, value);
+
+        let inner: AccelerometerI16 = value.try_into().unwrap();
+        assert_eq!(inner.x, 1);
+        assert_eq!(inner.y, -2);
+        assert_eq!(inner.z, 3);
     }
 }

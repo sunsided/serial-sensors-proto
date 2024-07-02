@@ -72,6 +72,17 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                         #name :: #variant_name ( value )
                     }
                 }
+
+                impl TryFrom< #name > for #variant_field_type {
+                    type Error = ();
+
+                    fn try_from(value: #name) -> Result<#variant_field_type, Self::Error> {
+                        match value {
+                            #name :: #variant_name (value) => Ok(value),
+                            _ => Err(())
+                        }
+                    }
+                }
             });
 
             sensor_match_arms.push(quote! {
