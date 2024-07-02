@@ -1,7 +1,7 @@
 use crate::{DataFrame, VersionedDataFrame};
 
 /// A protocol version.
-pub trait ProtocolVersion {
+pub trait ProtocolVersion: Default {
     /// The protocol version
     const VERSION: usize;
 
@@ -14,7 +14,7 @@ pub trait ProtocolVersion {
 macro_rules! impl_version {
     ($comment:literal, $type:tt, $version:literal) => {
         #[doc = $comment]
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
         pub struct $type;
 
         impl $type {

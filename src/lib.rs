@@ -31,8 +31,15 @@ where
 }
 
 /// Marker type for data frames.
-pub trait DataFrame {
+pub trait DataFrame: Sized {
     type ProtocolVersion: ProtocolVersion;
+
+    fn into_versioned(self) -> VersionedDataFrame<Self::ProtocolVersion, Self> {
+        VersionedDataFrame {
+            version: Self::ProtocolVersion::default(),
+            data: self,
+        }
+    }
 }
 
 /// A sensor data frame.
@@ -118,5 +125,15 @@ mod tests {
             sensor_tag: 0,
             value: Vector3Data { x: 0, y: -1, z: 2 },
         });
+
+        let frame = Version1DataFrame::<AccelerometerI16> {
+            sequence: u32::MAX,
+            sensor_sequence: u32::MAX,
+            sensor_tag: 0,
+            value: Vector3Data { x: 0, y: -1, z: 2 },
+        };
+
+        let versioned = frame.into_versioned();
+        assert_eq!(versioned.version, Version1);
     }
 }
