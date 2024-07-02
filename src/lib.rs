@@ -105,18 +105,11 @@ mod tests {
 
     #[test]
     fn test() {
-        let frame = VersionedDataFrame {
-            version: Version1,
-            data: Version1DataFrame::<AccelerometerI16> {
-                sequence: u32::MAX,
-                sensor_sequence: u32::MAX,
-                sensor_tag: 0,
-                value: Vector3Data {
-                    x: 0,
-                    y: -1,
-                    z: 2
-                }
-            },
-        };
+        let frame = Version1::frame(Version1DataFrame::<AccelerometerI16> {
+            sequence: u32::MAX,
+            sensor_sequence: u32::MAX,
+            sensor_tag: 0,
+            value: Vector3Data { x: 0, y: -1, z: 2 },
+        });
     }
 }
