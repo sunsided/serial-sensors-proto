@@ -47,5 +47,8 @@ mod tests {
         assert_eq!(instance.sensor_type_id(), 0x42);
         assert_eq!(instance.value_type(), ValueType::SInt16);
         assert_eq!(instance.num_components(), 3);
+
+        let value: Test = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }).into();
+        assert_eq!(instance, value);
     }
 }
