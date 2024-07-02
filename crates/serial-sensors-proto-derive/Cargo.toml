@@ -11,6 +11,7 @@ syn = "2.0.68"
 quote = "1.0"
 proc-macro2 = "1.0"
 serial-sensors-proto-traits = { version = "*", path = "../serial-sensors-proto-traits" }
+darling = "0.20.9"
 
 [lib]
 proc-macro = true
