@@ -76,8 +76,47 @@ pub trait RuntimeTypeInformation {
 macro_rules! impl_type {
     ($comment:literal, $type:tt, $sensor:expr, $value:expr, $num_components:literal, $base_type:ty) => {
         #[doc = $comment]
-        #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
-        pub struct $type;
+        #[derive(Default, Debug, Copy, Clone, PartialEq)]
+        pub struct $type($base_type);
+
+        impl $type {
+            /// Constructs a new instance from a value.
+            #[inline]
+            pub const fn new(value: $base_type) -> Self {
+                Self(value)
+            }
+
+            /// Consumes self and returns the inner type.
+            pub const fn into_inner(self) -> $base_type {
+                self.0
+            }
+        }
+
+        impl core::ops::Deref for $type {
+            type Target = $base_type;
+
+            fn deref(&self) -> &Self::Target {
+                &self.0
+            }
+        }
+
+        impl core::ops::DerefMut for $type {
+            fn deref_mut(&mut self) -> &mut Self::Target {
+                &mut self.0
+            }
+        }
+
+        impl core::convert::AsRef<$base_type> for $type {
+            fn as_ref(&self) -> &$base_type {
+                &self.0
+            }
+        }
+
+        impl core::convert::AsMut<$base_type> for $type {
+            fn as_mut(&mut self) -> &mut $base_type {
+                &mut self.0
+            }
+        }
 
         impl $crate::types::ConstTypeInformation for $type {
             const SENSOR: $crate::types::SensorType = $sensor;
@@ -113,6 +152,18 @@ macro_rules! impl_type {
             ) -> core::result::Result<(), ::bincode::error::EncodeError> {
                 ::bincode::Encode::encode(&{ ($sensor) as u8 }, encoder)?;
                 Ok(())
+            }
+        }
+
+        impl From<$type> for $crate::versions::Version1Data {
+            fn from(value: $type) -> $crate::versions::Version1Data {
+                $crate::versions::Version1Data::$type(value)
+            }
+        }
+
+        impl From<$type> for $base_type {
+            fn from(value: $type) -> $base_type {
+                value.0
             }
         }
     };
@@ -189,29 +240,3 @@ impl_type!(
     4,
     crate::vector4::Vector4Data<f32>
 );
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use crate::SERIALIZATION_CONFIG;
-
-    #[test]
-    fn test_accelerometer_data_i16_serialization() {
-        let input_data = AccelerometerI16;
-
-        // The serialization target buffer.
-        let mut buffer = [0_u8; 1024];
-
-        // Serialize the data
-        let num_serialized =
-            bincode::encode_into_slice(input_data, &mut buffer, SERIALIZATION_CONFIG)
-                .expect("Failed to serialize");
-
-        // Ensure the serialized length is correct
-        assert_eq!(num_serialized, 1);
-
-        // Ensure the serialized content is correct
-        let expected_bytes: [u8; 1] = [0x42];
-        assert_eq!(&buffer[..num_serialized], &expected_bytes);
-    }
-}
