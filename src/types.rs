@@ -47,7 +47,7 @@ pub enum ValueType {
 }
 
 /// Sensor type information.
-pub trait TypeInformation {
+pub trait TypeInformation: Default {
     /// The sensor type.
     const SENSOR: SensorType;
     /// The field type.
@@ -80,7 +80,7 @@ pub trait TypeInformation {
 macro_rules! impl_type {
     ($comment:literal, $type:tt, $sensor:expr, $value:expr, $num_components:literal, $base_type:ty) => {
         #[doc = $comment]
-        #[derive(Debug, Copy, Clone)]
+        #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
         pub struct $type;
 
         impl $crate::types::TypeInformation for $type {
