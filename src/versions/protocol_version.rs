@@ -39,7 +39,7 @@ macro_rules! impl_version {
             }
         }
 
-        impl $crate::protocol_version::ProtocolVersion for $type {
+        impl $crate::versions::ProtocolVersion for $type {
             const VERSION: usize = $version;
         }
 

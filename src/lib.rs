@@ -1,15 +1,14 @@
 #![no_std]
 #![deny(unsafe_code)]
 
-use crate::protocol_version::{ProtocolVersion, Version1};
-use crate::types::TypeInformation;
+use crate::versions::ProtocolVersion;
 use bincode::config::{Configuration, Fixint, LittleEndian};
 
-pub mod protocol_version;
 pub mod scalar;
 pub mod types;
 pub mod vector3;
 mod vector4;
+pub mod versions;
 
 /// The serialization configuration.
 const SERIALIZATION_CONFIG: Configuration<LittleEndian, Fixint> = bincode::config::standard()
@@ -40,45 +39,6 @@ pub trait DataFrame: Sized {
             data: self,
         }
     }
-}
-
-/// A sensor data frame.
-pub struct Version1DataFrame<T>
-where
-    T: TypeInformation,
-{
-    /// A sequence identifier, monotonically increasing.
-    ///
-    /// This value can be used to detect package loss on the receiver side. It should increase
-    /// on every transmitted package, across all sensor.
-    ///
-    /// If unsupported, set to [`u32::MAX`].
-    pub sequence: u32,
-
-    /// A sensor sequence identifier, monotonically increasing.
-    ///
-    /// This value should increase whenever new data became available for the specific
-    /// sensor, not when it was actually transmitted.
-    ///
-    /// If unsupported, set to [`u32::MAX`].
-    pub sensor_sequence: u32,
-
-    /// A device-specific tag for a specific sensor.
-    ///
-    /// This value should be identical across all readings from the same sensor. This
-    /// is to ensure that multiple sensors of the same type, e.g. multiple accelerometers,
-    /// can be told apart on the host side.
-    pub sensor_tag: u16,
-
-    /// The sensor reading.
-    pub value: T::Target,
-}
-
-impl<T> DataFrame for Version1DataFrame<T>
-where
-    T: TypeInformation,
-{
-    type ProtocolVersion = Version1;
 }
 
 struct ScalarData<T> {
@@ -113,19 +73,22 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::protocol_version::Version1;
     use crate::types::AccelerometerI16;
     use crate::vector3::Vector3Data;
+    use crate::versions::{Version1, Version1DataFrame};
 
     #[test]
-    fn test() {
-        let frame = Version1::frame(Version1DataFrame::<AccelerometerI16> {
+    fn frame_from_version() {
+        let _frame = Version1::frame(Version1DataFrame::<AccelerometerI16> {
             sequence: u32::MAX,
             sensor_sequence: u32::MAX,
             sensor_tag: 0,
             value: Vector3Data { x: 0, y: -1, z: 2 },
         });
+    }
 
+    #[test]
+    fn into_versioned() {
         let frame = Version1DataFrame::<AccelerometerI16> {
             sequence: u32::MAX,
             sensor_sequence: u32::MAX,
