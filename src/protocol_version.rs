@@ -1,4 +1,4 @@
-use crate::DataFrame;
+use crate::{DataFrame, VersionedDataFrame};
 
 /// A protocol version.
 pub trait ProtocolVersion {
@@ -18,7 +18,7 @@ macro_rules! impl_version {
         pub struct $type;
 
         impl $type {
-            /// Wraps the specified data into a [`VersionedDataFrame`(crate::VersionedDataFrame).
+            /// Wraps the specified [`VersionedDataFrame`](crate::VersionedDataFrame).
             pub const fn frame<D>(data: D) -> crate::VersionedDataFrame<$type, D>
             where
                 D: DataFrame,
@@ -27,6 +27,15 @@ macro_rules! impl_version {
                     version: Self,
                     data,
                 }
+            }
+        }
+
+        impl<D> From<D> for VersionedDataFrame<$type, D>
+        where
+            D: DataFrame,
+        {
+            fn from(value: D) -> VersionedDataFrame<$type, D> {
+                $type::frame(value)
             }
         }
 

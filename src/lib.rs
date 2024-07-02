@@ -1,7 +1,7 @@
 #![no_std]
 #![deny(unsafe_code)]
 
-use crate::protocol_version::ProtocolVersion;
+use crate::protocol_version::{ProtocolVersion, Version1};
 use crate::types::TypeInformation;
 use bincode::config::{Configuration, Fixint, LittleEndian};
 
@@ -31,7 +31,9 @@ where
 }
 
 /// Marker type for data frames.
-pub trait DataFrame {}
+pub trait DataFrame {
+    type ProtocolVersion: ProtocolVersion;
+}
 
 /// A sensor data frame.
 pub struct Version1DataFrame<T>
@@ -65,7 +67,12 @@ where
     pub value: T::Target,
 }
 
-impl<T> DataFrame for Version1DataFrame<T> where T: TypeInformation {}
+impl<T> DataFrame for Version1DataFrame<T>
+where
+    T: TypeInformation,
+{
+    type ProtocolVersion = Version1;
+}
 
 struct ScalarData<T> {
     value: T,
