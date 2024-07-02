@@ -80,7 +80,6 @@ impl ::bincode::Decode for Version1DataFrame {
 /// Data formats.
 #[derive(Debug, Clone, PartialEq)]
 pub enum Version1Data {
-    ProtocolVersion(crate::types::ProtocolVersion),
     SystemClockFrequency(crate::types::SystemClockFrequency),
     AccelerometerI16(crate::types::AccelerometerI16),
     MagnetometerI16(crate::types::MagnetometerI16),
@@ -93,7 +92,6 @@ pub enum Version1Data {
 impl RuntimeTypeInformation for Version1Data {
     fn sensor(&self) -> SensorType {
         match self {
-            Version1Data::ProtocolVersion(_) => crate::types::ProtocolVersion::SENSOR,
             Version1Data::SystemClockFrequency(_) => crate::types::SystemClockFrequency::SENSOR,
             Version1Data::AccelerometerI16(_) => crate::types::AccelerometerI16::SENSOR,
             Version1Data::MagnetometerI16(_) => crate::types::MagnetometerI16::SENSOR,
@@ -108,7 +106,6 @@ impl RuntimeTypeInformation for Version1Data {
 
     fn field(&self) -> ValueType {
         match self {
-            Version1Data::ProtocolVersion(_) => crate::types::ProtocolVersion::FIELD,
             Version1Data::SystemClockFrequency(_) => crate::types::SystemClockFrequency::FIELD,
             Version1Data::AccelerometerI16(_) => crate::types::AccelerometerI16::FIELD,
             Version1Data::MagnetometerI16(_) => crate::types::MagnetometerI16::FIELD,
@@ -123,7 +120,6 @@ impl RuntimeTypeInformation for Version1Data {
 
     fn num_components(&self) -> u8 {
         match self {
-            Version1Data::ProtocolVersion(_) => crate::types::ProtocolVersion::NUM_COMPONENTS,
             Version1Data::SystemClockFrequency(_) => {
                 crate::types::SystemClockFrequency::NUM_COMPONENTS
             }
@@ -145,7 +141,6 @@ impl bincode::Encode for Version1Data {
         encoder: &mut __E,
     ) -> Result<(), bincode::error::EncodeError> {
         match self {
-            Version1Data::ProtocolVersion(value) => bincode::Encode::encode(&value, encoder)?,
             Version1Data::SystemClockFrequency(value) => bincode::Encode::encode(&value, encoder)?,
             Version1Data::AccelerometerI16(value) => bincode::Encode::encode(&value, encoder)?,
             Version1Data::MagnetometerI16(value) => bincode::Encode::encode(&value, encoder)?,

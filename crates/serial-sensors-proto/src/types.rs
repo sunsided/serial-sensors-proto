@@ -132,15 +132,6 @@ macro_rules! impl_type {
 }
 
 impl_type!(
-    "Version tag",
-    ProtocolVersion,
-    SensorType::ProtocolVersion,
-    ValueType::SInt8,
-    1,
-    crate::scalar::ScalarData<u8>
-);
-
-impl_type!(
     "System clock frequency in Hz",
     SystemClockFrequency,
     SensorType::SystemClockFrequency,

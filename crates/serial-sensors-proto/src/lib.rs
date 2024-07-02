@@ -1,7 +1,6 @@
 #![no_std]
 #![deny(unsafe_code)]
 
-use crate::versions::ProtocolVersion;
 use bincode::config::{Configuration, Fixint, LittleEndian};
 use bincode::Encode;
 
@@ -17,6 +16,17 @@ const SERIALIZATION_CONFIG: Configuration<LittleEndian, Fixint> = bincode::confi
     .with_fixed_int_encoding()
     .with_little_endian()
     .with_no_limit();
+
+/// A protocol version.
+pub trait ProtocolVersion: Default {
+    /// The protocol version
+    const VERSION: usize;
+
+    /// Returns the protocol version
+    fn version(&self) -> usize {
+        Self::VERSION
+    }
+}
 
 /// A versioned data frame.
 #[derive(Encode, Debug, Clone, PartialEq)]
@@ -53,7 +63,7 @@ pub trait DataFrame: Sized + bincode::Encode + bincode::Decode {
 
 impl<V, D> bincode::Decode for VersionedDataFrame<V, D>
 where
-    V: ProtocolVersion,
+    V: ProtocolVersion + ::bincode::Decode,
     D: DataFrame,
 {
     fn decode<__D: bincode::de::Decoder>(

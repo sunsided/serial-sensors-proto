@@ -1,17 +1,6 @@
 #![no_std]
 #![deny(unsafe_code)]
 
-/// A protocol version.
-pub trait ProtocolVersion: Default {
-    /// The protocol version
-    const VERSION: usize;
-
-    /// Returns the protocol version
-    fn version(&self) -> usize {
-        Self::VERSION
-    }
-}
-
 /// Sensor type tags.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(u8)]
@@ -70,7 +59,7 @@ impl TryFrom<u8> for ValueType {
     fn try_from(value: u8) -> Result<Self, Self::Error> {
         match value {
             0x01 => Ok(Self::UInt8),
-            0x02 =>Ok( Self::SInt8),
+            0x02 => Ok(Self::SInt8),
             0x03 => Ok(Self::UInt16),
             0x04 => Ok(Self::SInt16),
             0x05 => Ok(Self::UInt32),
@@ -81,7 +70,7 @@ impl TryFrom<u8> for ValueType {
             0x0A => Ok(Self::SInt128),
             0x0B => Ok(Self::Float32),
             0x0C => Ok(Self::Float64),
-            _ => Err(())
+            _ => Err(()),
         }
     }
 }

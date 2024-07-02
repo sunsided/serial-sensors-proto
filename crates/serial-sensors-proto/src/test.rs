@@ -39,7 +39,6 @@ mod tests {
     use crate::types::AccelerometerI16;
     use crate::vector3::Vector3Data;
     use crate::SERIALIZATION_CONFIG;
-    use serial_sensors_proto_traits::RuntimeTypeInformation2;
 
     #[test]
     fn test() {
