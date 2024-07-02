@@ -1,9 +1,9 @@
 /// Sensor type tags.
 pub enum SensorType {
     /// The protocol version.
-    ProtocolVersion = 0x00,
+    ProtocolVersion = 0x01,
     /// The system clock frequency, expressed in Hertz (Hz).
-    SystemClockFrequency = 0x01,
+    SystemClockFrequency = 0x02,
     /// A sensor that measures the gravity vector, typically expressed in "g".
     Gravity = 0x42,
     /// A sensor that measures magnetic field strength, typically expressed in units auf Milli-Gauss (mG).
@@ -21,29 +21,29 @@ pub enum SensorType {
 /// Sensor type tags.
 pub enum ValueType {
     /// Unsigned 8-bit integer per component
-    UInt8 = 0x00,
+    UInt8 = 0x01,
     /// Signed 8-bit integer per component
-    SInt8 = 0x01,
+    SInt8 = 0x02,
     /// Unsigned 16-bit integer per component
-    UInt16 = 0x02,
+    UInt16 = 0x03,
     /// Signed 16-bit integer per component
-    SInt16 = 0x03,
+    SInt16 = 0x04,
     /// Unsigned 32-bit integer per component
-    UInt32 = 0x04,
+    UInt32 = 0x05,
     /// Signed 32-bit integer per component
-    SInt32 = 0x05,
+    SInt32 = 0x06,
     /// Unsigned 32-bit integer per component
-    UInt64 = 0x06,
+    UInt64 = 0x07,
     /// Signed 32-bit integer per component
-    SInt64 = 0x07,
+    SInt64 = 0x08,
     /// Unsigned 32-bit integer per component
-    UInt128 = 0x08,
+    UInt128 = 0x09,
     /// Signed 32-bit integer per component
-    SInt128 = 0x09,
+    SInt128 = 0x0A,
     /// 32-bit floating point per component
-    Float32 = 0x0A,
+    Float32 = 0x0B,
     /// 64-bit floating point per component
-    Float64 = 0x0B,
+    Float64 = 0x0C,
 }
 
 /// Sensor type information.
@@ -56,7 +56,7 @@ pub trait TypeInformation: Default {
     const NUM_COMPONENTS: usize;
 
     /// The fundamental type used to represent the information.
-    type Target;
+    type Target: ::bincode::Encode;
 
     /// Returns the sensor type.
     #[inline]
@@ -183,7 +183,7 @@ mod tests {
     fn test_accelerometer_data_i16_serialization() {
         let input_data = AccelerometerI16;
 
-        // The deserialization target buffer.
+        // The serialization target buffer.
         let mut buffer = [0_u8; 1024];
 
         // Serialize the data

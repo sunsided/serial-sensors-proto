@@ -3,8 +3,10 @@
 use crate::types::TypeInformation;
 use crate::versions::Version1;
 use crate::DataFrame;
+use bincode::Encode;
 
 /// A sensor data frame.
+#[derive(Encode, Debug, Clone, Eq, PartialEq)]
 pub struct Version1DataFrame<T>
 where
     T: TypeInformation,

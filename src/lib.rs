@@ -3,6 +3,7 @@
 
 use crate::versions::ProtocolVersion;
 use bincode::config::{Configuration, Fixint, LittleEndian};
+use bincode::Encode;
 
 pub mod scalar;
 pub mod types;
@@ -17,6 +18,7 @@ const SERIALIZATION_CONFIG: Configuration<LittleEndian, Fixint> = bincode::confi
     .with_no_limit();
 
 /// A versioned data frame.
+#[derive(Encode, Debug, Clone, PartialEq)]
 pub struct VersionedDataFrame<V, D>
 where
     V: ProtocolVersion,
@@ -27,6 +29,13 @@ where
 
     /// The data frame.
     pub data: D,
+}
+
+impl<V, D> Eq for VersionedDataFrame<V, D>
+where
+    V: ProtocolVersion + Eq + PartialEq,
+    D: DataFrame + Eq + PartialEq,
+{
 }
 
 /// Marker type for data frames.
@@ -98,5 +107,12 @@ mod tests {
 
         let versioned = frame.into_versioned();
         assert_eq!(versioned.version, Version1);
+
+        // The serialization target buffer.
+        let mut buffer = [0_u8; 1024];
+        let num_serialized =
+            bincode::encode_into_slice(versioned, &mut buffer, SERIALIZATION_CONFIG)
+                .expect("Failed to serialize");
+        assert_eq!(num_serialized, 1 + 4 + 4 + 2 + 3 * 2);
     }
 }
