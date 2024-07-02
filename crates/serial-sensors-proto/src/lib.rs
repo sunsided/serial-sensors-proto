@@ -6,6 +6,7 @@ use bincode::config::{Configuration, Fixint, LittleEndian};
 use bincode::Encode;
 
 pub mod scalar;
+mod test;
 pub mod types;
 pub mod vector3;
 mod vector4;
@@ -84,10 +85,12 @@ mod tests {
 
     #[test]
     fn into_versioned() {
-        let frame = Version1DataFrame::new(u32::MAX,
+        let frame = Version1DataFrame::new(
+            u32::MAX,
             12,
             0,
-            AccelerometerI16::new(Vector3Data { x: 0, y: -1, z: 2 }));
+            AccelerometerI16::new(Vector3Data { x: 0, y: -1, z: 2 }),
+        );
 
         let versioned = frame.into_versioned();
         assert_eq!(versioned.version, Version1);
@@ -99,8 +102,9 @@ mod tests {
         let num_serialized =
             bincode::encode_into_slice(versioned, &mut buffer, SERIALIZATION_CONFIG)
                 .expect("Failed to encode");
-        assert_eq!(num_serialized,
-                   1 // version
+        assert_eq!(
+            num_serialized,
+            1 // version
                        + 4 // global sequence
                        + 4 // sensor sequence
                        + 2 // sensor tag
@@ -108,7 +112,7 @@ mod tests {
                        + 1 // data type
                        + 1 // num components
                        + 3 * 2 // 3-axis data
-            );
+        );
 
         // Decode
         let (value, num_read) =

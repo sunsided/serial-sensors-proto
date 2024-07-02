@@ -1,9 +1,11 @@
 //! A version 1 data frame.
 
-use crate::types::{ConstTypeInformation, RuntimeTypeInformation, SensorType, ValueType};
 use crate::versions::Version1;
 use crate::DataFrame;
 use bincode::{Decode, Encode};
+use serial_sensors_proto_traits::{
+    CompileTimeTypeInformation, RuntimeTypeInformation, SensorType, ValueType,
+};
 
 /// A sensor data frame.
 #[derive(Encode, Debug, Clone, PartialEq)]
@@ -164,6 +166,6 @@ impl ::bincode::Decode for Version1Data {
         decoder: &mut __D,
     ) -> Result<Self, ::bincode::error::DecodeError> {
         let v: u8 = bincode::Decode::decode(decoder)?;
-        todo!()
+        todo!();
     }
 }
