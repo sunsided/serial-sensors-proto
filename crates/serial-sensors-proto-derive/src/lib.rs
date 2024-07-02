@@ -43,6 +43,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
     let mut field_match_arms = Vec::new();
     let mut num_components_match_arms = Vec::new();
     let mut from_impls = Vec::new();
+    let mut encode_match_arms = Vec::new();
 
     let mut sensor_types = HashSet::new();
     let mut duplicate_error = None;
@@ -96,6 +97,10 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
             num_components_match_arms.push(quote! {
                 #name::#variant_name(_) => #num_components,
             });
+
+            encode_match_arms.push(quote! {
+                #name::#variant_name(value) => ::bincode::Encode::encode(&value, encoder)?,
+            });
         }
     }
 
@@ -124,6 +129,22 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
             }
 
             #( #from_impls )*
+
+            impl ::bincode::Encode for #name {
+                fn encode<__E: ::bincode::enc::Encoder>(
+                    &self,
+                    encoder: &mut __E,
+                ) -> core::result::Result<(), ::bincode::error::EncodeError> {
+                    use serial_sensors_proto_traits::RuntimeTypeInformation2;
+                    bincode::Encode::encode(&self.sensor_type_id(), encoder)?;
+                    bincode::Encode::encode(&(self.value_type() as u8), encoder)?;
+                    // don't encode the component count; sensor ID and type are enough
+                    match self {
+                        #( #encode_match_arms )*
+                    }
+                    Ok(())
+                }
+            }
         }
     };
 
