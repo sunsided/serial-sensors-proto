@@ -1,3 +1,5 @@
+use bincode::Encode;
+
 /// Sensor type tags.
 pub enum SensorType {
     /// The protocol version.
@@ -47,7 +49,7 @@ pub enum ValueType {
 }
 
 /// Sensor type information.
-pub trait TypeInformation: Default {
+pub trait TypeInformation: Default + Encode {
     /// The sensor type.
     const SENSOR: SensorType;
     /// The field type.
@@ -56,7 +58,7 @@ pub trait TypeInformation: Default {
     const NUM_COMPONENTS: usize;
 
     /// The fundamental type used to represent the information.
-    type Target: ::bincode::Encode;
+    type Target: bincode::Encode;
 
     /// Returns the sensor type.
     #[inline]

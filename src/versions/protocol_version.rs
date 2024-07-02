@@ -1,7 +1,8 @@
 use crate::{DataFrame, VersionedDataFrame};
+use bincode::error::DecodeError;
 
 /// A protocol version.
-pub trait ProtocolVersion: Default {
+pub trait ProtocolVersion: Default + bincode::Encode + bincode::Decode {
     /// The protocol version
     const VERSION: usize;
 
@@ -50,6 +51,19 @@ macro_rules! impl_version {
             ) -> core::result::Result<(), ::bincode::error::EncodeError> {
                 ::bincode::Encode::encode(&{ ($version) as u8 }, encoder)?;
                 Ok(())
+            }
+        }
+
+        impl ::bincode::Decode for Version1 {
+            fn decode<__D: bincode::de::Decoder>(
+                decoder: &mut __D,
+            ) -> Result<Self, ::bincode::error::DecodeError> {
+                let v: u8 = bincode::Decode::decode(decoder)?;
+                if v != $version {
+                    Err(DecodeError::Other("invalid version"))
+                } else {
+                    Ok(Self)
+                }
             }
         }
     };

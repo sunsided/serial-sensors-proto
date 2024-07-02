@@ -39,7 +39,7 @@ where
 }
 
 /// Marker type for data frames.
-pub trait DataFrame: Sized {
+pub trait DataFrame: Sized + bincode::Encode + bincode::Decode {
     type ProtocolVersion: ProtocolVersion;
 
     fn into_versioned(self) -> VersionedDataFrame<Self::ProtocolVersion, Self> {
@@ -50,31 +50,17 @@ pub trait DataFrame: Sized {
     }
 }
 
-struct ScalarData<T> {
-    value: T,
-}
-
-impl<T> ::bincode::Decode for ScalarData<T>
+impl<V, D> bincode::Decode for VersionedDataFrame<V, D>
 where
-    T: ::bincode::Decode,
+    V: ProtocolVersion,
+    D: DataFrame,
 {
-    fn decode<__D: ::bincode::de::Decoder>(
+    fn decode<__D: bincode::de::Decoder>(
         decoder: &mut __D,
-    ) -> core::result::Result<Self, ::bincode::error::DecodeError> {
+    ) -> Result<Self, ::bincode::error::DecodeError> {
         Ok(Self {
-            value: ::bincode::Decode::decode(decoder)?,
-        })
-    }
-}
-impl<'__de, T> ::bincode::BorrowDecode<'__de> for ScalarData<T>
-where
-    T: ::bincode::de::BorrowDecode<'__de>,
-{
-    fn borrow_decode<__D: ::bincode::de::BorrowDecoder<'__de>>(
-        decoder: &mut __D,
-    ) -> core::result::Result<Self, ::bincode::error::DecodeError> {
-        Ok(Self {
-            value: ::bincode::BorrowDecode::borrow_decode(decoder)?,
+            version: bincode::Decode::decode(decoder)?,
+            data: bincode::Decode::decode(decoder)?,
         })
     }
 }
@@ -89,7 +75,7 @@ mod tests {
     #[test]
     fn frame_from_version() {
         let _frame = Version1::frame(Version1DataFrame::<AccelerometerI16> {
-            sequence: u32::MAX,
+            global_sequence: u32::MAX,
             sensor_sequence: u32::MAX,
             sensor_tag: 0,
             value: Vector3Data { x: 0, y: -1, z: 2 },
@@ -99,8 +85,8 @@ mod tests {
     #[test]
     fn into_versioned() {
         let frame = Version1DataFrame::<AccelerometerI16> {
-            sequence: u32::MAX,
-            sensor_sequence: u32::MAX,
+            global_sequence: u32::MAX,
+            sensor_sequence: 12,
             sensor_tag: 0,
             value: Vector3Data { x: 0, y: -1, z: 2 },
         };
@@ -110,9 +96,24 @@ mod tests {
 
         // The serialization target buffer.
         let mut buffer = [0_u8; 1024];
+
+        // Encode
         let num_serialized =
             bincode::encode_into_slice(versioned, &mut buffer, SERIALIZATION_CONFIG)
-                .expect("Failed to serialize");
+                .expect("Failed to encode");
         assert_eq!(num_serialized, 1 + 4 + 4 + 2 + 3 * 2);
+
+        // Decode
+        let (value, num_read) =
+            bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG).expect("Failed to decode");
+        let value: VersionedDataFrame<Version1, Version1DataFrame<AccelerometerI16>> = value;
+        assert_eq!(num_read, 17);
+        assert_eq!(value.version, Version1);
+        assert_eq!(value.data.global_sequence, u32::MAX);
+        assert_eq!(value.data.sensor_sequence, 12);
+        assert_eq!(value.data.sensor_tag, 0);
+        assert_eq!(value.data.value.x, 0);
+        assert_eq!(value.data.value.y, -1);
+        assert_eq!(value.data.value.z, 2);
     }
 }

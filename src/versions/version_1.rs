@@ -3,13 +3,13 @@
 use crate::types::TypeInformation;
 use crate::versions::Version1;
 use crate::DataFrame;
-use bincode::Encode;
+use bincode::{Decode, Encode};
 
 /// A sensor data frame.
 #[derive(Encode, Debug, Clone, Eq, PartialEq)]
 pub struct Version1DataFrame<T>
 where
-    T: TypeInformation,
+    T: TypeInformation + Encode,
 {
     /// A sequence identifier, monotonically increasing.
     ///
@@ -17,7 +17,7 @@ where
     /// on every transmitted package, across all sensor.
     ///
     /// If unsupported, set to [`u32::MAX`].
-    pub sequence: u32,
+    pub global_sequence: u32,
 
     /// A sensor sequence identifier, monotonically increasing.
     ///
@@ -41,6 +41,24 @@ where
 impl<T> DataFrame for Version1DataFrame<T>
 where
     T: TypeInformation,
+    T::Target: Decode,
 {
     type ProtocolVersion = Version1;
+}
+
+impl<T> ::bincode::Decode for Version1DataFrame<T>
+where
+    T: TypeInformation,
+    T::Target: Decode,
+{
+    fn decode<__D: bincode::de::Decoder>(
+        decoder: &mut __D,
+    ) -> Result<Self, bincode::error::DecodeError> {
+        Ok(Self {
+            global_sequence: bincode::Decode::decode(decoder)?,
+            sensor_sequence: bincode::Decode::decode(decoder)?,
+            sensor_tag: bincode::Decode::decode(decoder)?,
+            value: bincode::Decode::decode(decoder)?,
+        })
+    }
 }
