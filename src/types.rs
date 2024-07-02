@@ -1,23 +1,49 @@
 /// Sensor type tags.
 pub enum SensorType {
+    /// The protocol version.
+    ProtocolVersion = 0x00,
+    /// The system clock frequency, expressed in Hertz (Hz).
+    SystemClockFrequency = 0x01,
     /// A sensor that measures the gravity vector, typically expressed in "g".
-    Gravity,
+    Gravity = 0x42,
     /// A sensor that measures magnetic field strength, typically expressed in units auf Milli-Gauss (mG).
-    MagneticFieldStrength,
+    MagneticFieldStrength = 0x43,
     /// A sensor that measures temperature, typically expressed in °C.
-    Temperature,
+    Temperature = 0x44,
     /// A sensor that measures angular acceleration, typically expressed in degrees/second.
-    AngularAcceleration,
+    AngularAcceleration = 0x45,
+    /// Euler angles, in radians.
+    EulerAngles = 0xF0,
+    /// An orientation quaternion.
+    OrientationQuaternion = 0xF1,
 }
 
 /// Sensor type tags.
 pub enum ValueType {
-    /// 8-bit integer per component
-    Int8 = 0x00,
-    /// 16-bit integer per component
-    Int16 = 0x01,
-    /// 32-bit integer per component
-    Int32 = 0x02,
+    /// Unsigned 8-bit integer per component
+    UInt8 = 0x00,
+    /// Signed 8-bit integer per component
+    SInt8 = 0x01,
+    /// Unsigned 16-bit integer per component
+    UInt16 = 0x02,
+    /// Signed 16-bit integer per component
+    SInt16 = 0x03,
+    /// Unsigned 32-bit integer per component
+    UInt32 = 0x04,
+    /// Signed 32-bit integer per component
+    SInt32 = 0x05,
+    /// Unsigned 32-bit integer per component
+    UInt64 = 0x06,
+    /// Signed 32-bit integer per component
+    SInt64 = 0x07,
+    /// Unsigned 32-bit integer per component
+    UInt128 = 0x08,
+    /// Signed 32-bit integer per component
+    SInt128 = 0x09,
+    /// 32-bit floating point per component
+    Float32 = 0x0A,
+    /// 64-bit floating point per component
+    Float64 = 0x0B,
 }
 
 /// Sensor type information.
@@ -28,6 +54,9 @@ pub trait TypeInformation {
     const FIELD: ValueType;
     /// The number of components of the vector.
     const NUM_COMPONENTS: usize;
+
+    /// The fundamental type used to represent the information.
+    type Target;
 
     /// Returns the sensor type.
     #[inline]
@@ -49,14 +78,16 @@ pub trait TypeInformation {
 }
 
 macro_rules! impl_type {
-    ($comment:literal, $type:tt, $sensor:expr, $value:expr, $num_components:literal) => {
+    ($comment:literal, $type:tt, $sensor:expr, $value:expr, $num_components:literal, $base_type:ty) => {
         #[doc = $comment]
+        #[derive(Debug, Copy, Clone)]
         pub struct $type;
 
         impl $crate::types::TypeInformation for $type {
             const SENSOR: $crate::types::SensorType = $sensor;
             const FIELD: $crate::types::ValueType = $value;
             const NUM_COMPONENTS: usize = $num_components;
+            type Target = $base_type;
         }
 
         impl ::bincode::Encode for $type {
@@ -72,35 +103,75 @@ macro_rules! impl_type {
 }
 
 impl_type!(
+    "Version tag",
+    ProtocolVersion,
+    SensorType::ProtocolVersion,
+    ValueType::SInt8,
+    1,
+    crate::scalar::ScalarData<u8>
+);
+
+impl_type!(
+    "System clock frequency in Hz",
+    SystemClockFrequency,
+    SensorType::SystemClockFrequency,
+    ValueType::UInt32,
+    1,
+    crate::scalar::ScalarData<u32>
+);
+
+impl_type!(
     "Acceleration / gravity data, 3×`i16`",
     AccelerometerI16,
     SensorType::Gravity,
-    ValueType::Int16,
-    3
+    ValueType::SInt16,
+    3,
+    crate::vector3::Vector3Data<i16>
 );
 
 impl_type!(
     "Magnetic field strength data, 3×`i16`",
     MagnetometerI16,
     SensorType::MagneticFieldStrength,
-    ValueType::Int16,
-    3
+    ValueType::SInt16,
+    3,
+    crate::vector3::Vector3Data<i16>
 );
 
 impl_type!(
     "Temperature data, 1×`i16`",
     TemperatureI16,
     SensorType::Temperature,
-    ValueType::Int16,
-    1
+    ValueType::SInt16,
+    1,
+    crate::scalar::ScalarData<i16>
 );
 
 impl_type!(
     "Angular acceleration data, 3×`i16`",
     GyroscopeI16,
     SensorType::AngularAcceleration,
-    ValueType::Int16,
-    3
+    ValueType::SInt16,
+    3,
+    crate::vector3::Vector3Data<i16>
+);
+
+impl_type!(
+    "Euler angles, 3×`f32`",
+    EulerAnglesF32,
+    SensorType::EulerAngles,
+    ValueType::Float32,
+    3,
+    crate::vector3::Vector3Data<f32>
+);
+
+impl_type!(
+    "Orientation quaternion, 4×`f32`",
+    OrientationQuaternionF32,
+    SensorType::OrientationQuaternion,
+    ValueType::Float32,
+    4,
+    crate::vector4::Vector4Data<f32>
 );
 
 #[cfg(test)]

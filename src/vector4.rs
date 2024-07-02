@@ -1,7 +1,7 @@
 use bincode::{Decode, Encode};
 
 /// A four-dimensional vector, Quaternion, etc.
-#[derive(Encode, Decode, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Vector4Data<T> {
     /// First vector component.
     pub a: T,

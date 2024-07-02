@@ -1,7 +1,7 @@
 use bincode::{Decode, Encode};
 
 /// A three-dimensional vector.
-#[derive(Encode, Decode, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Vector3Data<T> {
     /// First vector component.
     pub x: T,
@@ -14,8 +14,8 @@ pub struct Vector3Data<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use bincode;
     use crate::SERIALIZATION_CONFIG;
+    use bincode;
 
     #[test]
     fn test_accelerometer_data_i16_serialization() {
@@ -29,8 +29,9 @@ mod tests {
         let mut buffer = [0_u8; 1024];
 
         // Serialize the data
-        let num_serialized = bincode::encode_into_slice(accel_data, &mut buffer, SERIALIZATION_CONFIG)
-            .expect("Failed to serialize");
+        let num_serialized =
+            bincode::encode_into_slice(accel_data, &mut buffer, SERIALIZATION_CONFIG)
+                .expect("Failed to serialize");
 
         // Ensure the serialized length is correct
         assert_eq!(num_serialized, 6);
@@ -47,7 +48,8 @@ mod tests {
         assert_eq!(&buffer[..num_serialized], &expected_bytes);
 
         // Deserialize the data
-        let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG).expect("Failed to deserialize");
+        let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
+            .expect("Failed to deserialize");
         let deserialized: Vector3Data<i16> = result.0;
         let count = result.1;
 
