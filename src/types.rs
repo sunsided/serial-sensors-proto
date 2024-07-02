@@ -49,7 +49,7 @@ pub enum ValueType {
 }
 
 /// Sensor type information.
-pub trait TypeInformation: Default + Encode {
+pub trait ConstTypeInformation: Default + Encode {
     /// The sensor type.
     const SENSOR: SensorType;
     /// The field type.
@@ -59,24 +59,18 @@ pub trait TypeInformation: Default + Encode {
 
     /// The fundamental type used to represent the information.
     type Target: bincode::Encode;
+}
 
+/// Sensor type information.
+pub trait RuntimeTypeInformation {
     /// Returns the sensor type.
-    #[inline]
-    fn sensor(&self) -> SensorType {
-        Self::SENSOR
-    }
+    fn sensor(&self) -> SensorType;
 
     /// Returns the field value type.
-    #[inline]
-    fn field(&self) -> ValueType {
-        Self::FIELD
-    }
+    fn field(&self) -> ValueType;
 
     /// The number of components
-    #[inline]
-    fn num_components(&self) -> usize {
-        Self::NUM_COMPONENTS
-    }
+    fn num_components(&self) -> usize;
 }
 
 macro_rules! impl_type {
@@ -85,11 +79,31 @@ macro_rules! impl_type {
         #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
         pub struct $type;
 
-        impl $crate::types::TypeInformation for $type {
+        impl $crate::types::ConstTypeInformation for $type {
             const SENSOR: $crate::types::SensorType = $sensor;
             const FIELD: $crate::types::ValueType = $value;
             const NUM_COMPONENTS: usize = $num_components;
             type Target = $base_type;
+        }
+
+        impl $crate::types::RuntimeTypeInformation for $type {
+            /// Returns the sensor type.
+            #[inline]
+            fn sensor(&self) -> SensorType {
+                <Self as $crate::types::ConstTypeInformation>::SENSOR
+            }
+
+            /// Returns the field value type.
+            #[inline]
+            fn field(&self) -> ValueType {
+                <Self as $crate::types::ConstTypeInformation>::FIELD
+            }
+
+            /// The number of components
+            #[inline]
+            fn num_components(&self) -> usize {
+                <Self as $crate::types::ConstTypeInformation>::NUM_COMPONENTS
+            }
         }
 
         impl ::bincode::Encode for $type {
@@ -199,17 +213,5 @@ mod tests {
         // Ensure the serialized content is correct
         let expected_bytes: [u8; 1] = [0x42];
         assert_eq!(&buffer[..num_serialized], &expected_bytes);
-
-        /*
-        // Deserialize the data
-        let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
-            .expect("Failed to deserialize");
-        let deserialized: AccelerometerI16 = result.0;
-        let count = result.1;
-
-        // Ensure the deserialized content is correct
-        assert_eq!(deserialized, input_data);
-        assert_eq!(count, 2);
-        */
     }
 }
