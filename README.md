@@ -2,6 +2,14 @@
 
 > A simple wire format for transmitting MEMS sensor data and friends.
 
+[![Crates.io][crates-image]][crates-link]
+[![Docs][docs-image]][docs-link]
+[![Build Status][build-image]][build-link]
+[![Safety Dance][safety-image]][safety-link]
+[![codecov][codecov-image]][codecov-link]
+![MSRV][msrv-image]
+[![EUPL 1.2 licensed][license-eupl-image]][license-eupl-link]
+
 The approach is threefold:
 
 - The protocol is a little bit extensible in sensor and data types and supports 1-, 3- and 4-dimensional readings.
@@ -41,3 +49,33 @@ fn example() {
     assert_eq!(data.z, 3);
 }
 ```
+
+[crates-image]: https://img.shields.io/crates/v/serial-sensors-proto
+
+[crates-link]: https://crates.io/crates/serial-sensors-proto
+
+[docs-image]: https://docs.rs/serial-sensors-proto/badge.svg
+
+[docs-link]: https://docs.rs/serial-sensors-proto/
+
+[build-image]: https://github.com/sunsided/serial-sensors-proto/workflows/Rust/badge.svg
+
+[build-link]: https://github.com/sunsided/serial-sensors-proto/actions
+
+[safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
+
+[safety-link]: https://github.com/rust-secure-code/safety-dance/
+
+[msrv-image]: https://img.shields.io/badge/rustc-1.67+-blue.svg
+
+[license-eupl-image]: https://img.shields.io/badge/license-EUPL_1.2-blue.svg
+
+[license-eupl-link]: https://github.com/sunsided/serial-sensors-proto/blob/develop/LICENSE-EUPL
+
+[embedded-hal]: https://docs.rs/embedded-hal/
+
+[codecov-image]: https://codecov.io/gh/sunsided/serial-sensors-proto/graph/badge.svg?token=ysTw27B78y
+
+[codecov-link]: https://codecov.io/gh/sunsided/serial-sensors-proto
+
+[cc]: https://contributor-covenant.org
