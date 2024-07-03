@@ -39,13 +39,9 @@ where
 /// Deserializes data after applying byte un-stuffing.
 ///
 /// Returns the number of bytes read from the buffer
-pub fn deserialize<B>(
-    mut buffer: B,
-) -> Result<(usize, VersionedDataFrame<Version1, Version1DataFrame>), DeserializationError>
-where
-    B: core::borrow::BorrowMut<[u8]>,
-{
-    let buffer = buffer.borrow_mut();
+pub fn deserialize(
+    buffer: &mut [u8],
+) -> Result<(usize, VersionedDataFrame<Version1, Version1DataFrame>), DeserializationError> {
     // TODO: Ensure that sync recovery actually works.
     let read_length = corncobs::decode_in_place(buffer)?;
     let data = &buffer[..read_length];
@@ -124,7 +120,7 @@ mod tests {
         assert_eq!(range.len(), 21);
 
         // The deserialization target buffer.
-        let data = deserialize(&mut buffer[range]).unwrap();
+        let (_read, data) = deserialize(&mut buffer[range]).unwrap();
         assert_eq!(data.version, Version1);
         assert_eq!(data.data.global_sequence, u32::MAX);
         assert_eq!(data.data.sensor_sequence, 12);
