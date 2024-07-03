@@ -1,16 +1,16 @@
 #![cfg_attr(not(feature = "std"), no_std)]
+#![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_code)]
 
 use bincode::Encode;
 use serial_sensors_proto_derive::SerialSensors;
 
-pub mod scalar;
+mod data_types;
 mod serializer;
 pub mod types;
-pub mod vector3;
-mod vector4;
-pub mod versions;
+mod versions;
 
+pub use data_types::*;
 pub use serializer::*;
 
 /// A protocol version.
@@ -207,7 +207,6 @@ mod tests {
     use super::*;
     use crate::serializer::SERIALIZATION_CONFIG;
     use crate::types::AccelerometerI16;
-    use crate::vector3::Vector3Data;
     use crate::versions::{Version1, Version1DataFrame};
 
     #[test]

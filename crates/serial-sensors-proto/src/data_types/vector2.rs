@@ -1,21 +1,46 @@
 use bincode::{Decode, Encode};
 
-/// A three-dimensional vector.
+/// A two-dimensional vector.
 #[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
-pub struct Vector3Data<T> {
+pub struct Vector2Data<T> {
     /// First vector component.
     pub x: T,
     /// Second vector component.
     pub y: T,
-    /// Third vector component.
-    pub z: T,
+}
+
+#[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+impl<C> From<Vector2Data<C>> for micromath::vector::Vector2d<C>
+where
+    C: micromath::vector::Component,
+{
+    fn from(value: Vector2Data<C>) -> Self {
+        Self {
+            x: value.x,
+            y: value.y,
+        }
+    }
+}
+
+#[cfg(feature = "alloc")]
+#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+impl<C> From<micromath::vector::Vector2d<C>> for Vector2Data<C>
+where
+    C: micromath::vector::Component,
+{
+    fn from(value: micromath::vector::Vector2d<C>) -> Self {
+        Self {
+            x: value.x,
+            y: value.y,
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
-    use super::*;
-    use bincode;
     use crate::serializer::SERIALIZATION_CONFIG;
+    use crate::Vector3Data;
 
     #[test]
     fn test_accelerometer_data_i16_serialization() {
