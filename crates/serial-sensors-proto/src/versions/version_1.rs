@@ -7,6 +7,7 @@ use bincode::Encode;
 /// A sensor data frame.
 #[derive(Encode, Debug, Clone, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct Version1DataFrame {
     /// A sequence identifier, monotonically increasing.
     ///

@@ -12,6 +12,7 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added `new` constructors for the fundamental types.
 - Added destructuring into tuples and vectors for fundamental types.
 - Added construction from tuples and vectors for fundamental types.
+- Added `defmt` support.
 
 ### Internal
 

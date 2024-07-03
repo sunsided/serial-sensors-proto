@@ -11,7 +11,8 @@
 //! ## Crate features
 //! * `unsafe` - Enables representation of fundamental data types as slices.
 //! * `micromath` - Enables conversion to and from `micromath` vector types.
-//! * `quaternion` - Forwarded to micromath to enable quaternion support.
+//! * `quaternion` - Forwarded to `micromath` to enable quaternion support.
+//! * `defmt` - Enables deferred formatting support via `defmt`.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
@@ -52,6 +53,7 @@ pub trait ProtocolVersion: Default + Encode {
 
 /// A versioned data frame.
 #[derive(Encode, Debug, Clone, PartialEq)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct VersionedDataFrame<V, D>
 where
     V: ProtocolVersion,
@@ -66,6 +68,7 @@ where
 
 /// Data formats.
 #[derive(Debug, Clone, PartialEq, SerialSensors)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum SensorData {
     /// The system clock frequency, expressed in Hertz (Hz).
     #[sensor(id = 0x2, data = ValueType::UInt32, components = 1)]
@@ -99,6 +102,7 @@ pub enum SensorData {
 /// Sensor type tags.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(u8)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum SensorType {
     /// The protocol version.
     ProtocolVersion = 0x01,
@@ -121,6 +125,7 @@ pub enum SensorType {
 /// Sensor type tags.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 #[repr(u8)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum ValueType {
     /// Unsigned 8-bit integer per component
     UInt8 = 0x01,

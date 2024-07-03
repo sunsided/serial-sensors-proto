@@ -4,6 +4,7 @@ macro_rules! impl_version {
     ($comment:literal, $type:tt, $version:literal) => {
         #[doc = $comment]
         #[derive(Default, Debug, Copy, Clone, Eq, PartialEq)]
+        #[cfg_attr(feature = "defmt", derive(defmt::Format))]
         pub struct $type;
 
         impl $type {
