@@ -12,7 +12,7 @@ macro_rules! impl_version {
             where
                 D: DataFrame,
             {
-                crate::VersionedDataFrame {
+                VersionedDataFrame {
                     version: Self,
                     data,
                 }
@@ -32,16 +32,18 @@ macro_rules! impl_version {
             const VERSION: usize = $version;
         }
 
+        #[allow(unused_qualifications)]
         impl bincode::Encode for $type {
-            fn encode<__E: ::bincode::enc::Encoder>(
+            fn encode<__E: bincode::enc::Encoder>(
                 &self,
                 encoder: &mut __E,
             ) -> core::result::Result<(), bincode::error::EncodeError> {
-                ::bincode::Encode::encode(&{ ($version) as u8 }, encoder)?;
+                bincode::Encode::encode(&{ ($version) as u8 }, encoder)?;
                 Ok(())
             }
         }
 
+        #[allow(unused_qualifications)]
         impl bincode::Decode for Version1 {
             fn decode<__D: bincode::de::Decoder>(
                 decoder: &mut __D,
