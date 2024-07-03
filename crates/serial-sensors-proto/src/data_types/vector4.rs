@@ -57,16 +57,16 @@ impl<T> From<Vector4Data<T>> for [T; 4] {
     }
 }
 
-#[cfg(feature = "alloc")]
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+#[cfg(feature = "quaternion")]
+#[cfg_attr(docsrs, doc(cfg(feature = "quaternion")))]
 impl From<Vector4Data<f32>> for micromath::Quaternion {
     fn from(value: Vector4Data<f32>) -> Self {
         micromath::Quaternion::new(value.a, value.b, value.c, value.d)
     }
 }
 
-#[cfg(feature = "alloc")]
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+#[cfg(feature = "quaternion")]
+#[cfg_attr(docsrs, doc(cfg(feature = "quaternion")))]
 impl From<micromath::Quaternion> for Vector4Data<f32> {
     fn from(value: micromath::Quaternion) -> Self {
         Self {

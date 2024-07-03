@@ -51,8 +51,8 @@ impl<T> From<Vector3Data<T>> for [T; 3] {
     }
 }
 
-#[cfg(feature = "alloc")]
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+#[cfg(feature = "micromath")]
+#[cfg_attr(docsrs, doc(cfg(feature = "micromath")))]
 impl<C> From<Vector3Data<C>> for micromath::vector::Vector3d<C>
 where
     C: micromath::vector::Component,
@@ -66,8 +66,8 @@ where
     }
 }
 
-#[cfg(feature = "alloc")]
-#[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
+#[cfg(feature = "micromath")]
+#[cfg_attr(docsrs, doc(cfg(feature = "micromath")))]
 impl<C> From<micromath::vector::Vector3d<C>> for Vector3Data<C>
 where
     C: micromath::vector::Component,

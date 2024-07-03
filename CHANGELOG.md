@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.1] - 2024-07-03
+
+[0.2.1]: https://github.com/sunsided/serial-sensors-proto/releases/tag/v0.2.1
+
+### Fixed
+
+- Fixed `micromath` and `quaternion` feature gates.
+
 ## [0.2.0] - 2024-07-03
 
 [0.2.0]: https://github.com/sunsided/serial-sensors-proto/releases/tag/v0.2.0
