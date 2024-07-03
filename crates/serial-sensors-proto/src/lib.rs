@@ -120,7 +120,6 @@ mod tests {
                        + 2 // sensor tag
                        + 1 // sensor type
                        + 1 // data type
-                       + 1 // num components
                        + 3 * 2 // 3-axis data
         );
 
@@ -128,7 +127,7 @@ mod tests {
         let (value, num_read) =
             bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG).expect("Failed to decode");
         let value: VersionedDataFrame<Version1, Version1DataFrame> = value;
-        assert_eq!(num_read, 17);
+        assert_eq!(num_read, 19);
         assert_eq!(value.version, Version1);
         assert_eq!(value.data.global_sequence, u32::MAX);
         assert_eq!(value.data.sensor_sequence, 12);

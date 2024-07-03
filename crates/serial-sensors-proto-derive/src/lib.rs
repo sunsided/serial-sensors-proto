@@ -5,9 +5,8 @@ use darling::ast::Fields;
 use darling::{FromDeriveInput, FromMeta, FromVariant};
 use proc_macro::TokenStream;
 use quote::quote;
-use std::any::Any;
 use std::collections::HashSet;
-use syn::{parse_macro_input, DeriveInput, Field, Path};
+use syn::{parse_macro_input, DeriveInput, Field, Path, Type};
 
 #[derive(Debug, FromMeta)]
 struct SensorAttributes {
@@ -26,7 +25,7 @@ struct Version1DataVariant {
 }
 
 #[derive(Debug, FromDeriveInput)]
-#[darling(attributes(sensor), supports(enum_any))]
+#[darling(attributes(sensor), supports(enum_newtype))]
 struct Version1Data {
     ident: syn::Ident,
     data: darling::ast::Data<Version1DataVariant, darling::util::Ignored>,
@@ -188,6 +187,86 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                 }
             }
         }
+    };
+
+    TokenStream::from(expanded)
+}
+
+#[derive(Debug, FromDeriveInput)]
+#[darling(attributes(sensor), supports(struct_newtype))]
+struct SensorDataType {
+    ident: syn::Ident,
+    data: darling::ast::Data<darling::util::Ignored, Type>,
+}
+
+#[proc_macro_derive(SensorDataType)]
+pub fn derive_sensor_data_type(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
+    let data = SensorDataType::from_derive_input(&input).expect("Failed to parse input");
+
+    let name = &data.ident;
+    let expanded = if let darling::ast::Data::Struct(fields) = &data.data {
+        let field = &fields.fields[0];
+        quote! {
+            impl #name {
+                /// Constructs a new instance of the [`#name`] type.
+                pub const fn new(value: #field) -> Self {
+                    Self(value)
+                }
+            }
+
+            impl core::convert::AsRef<#field> for #name {
+                fn as_ref(&self) -> &#field {
+                    &self.0
+                }
+            }
+
+            impl core::convert::AsMut<#field> for #name {
+                fn as_mut(&mut self) -> &mut #field {
+                    &mut self.0
+                }
+            }
+
+            impl core::ops::Deref for #name {
+                type Target = #field;
+
+                fn deref(&self) -> &Self::Target {
+                    &self.0
+                }
+            }
+
+            impl core::ops::DerefMut for #name {
+                fn deref_mut(&mut self) -> &mut Self::Target {
+                    &mut self.0
+                }
+            }
+
+            impl From<#name> for #field {
+                fn from(value: #name) -> #field {
+                    value.0
+                }
+            }
+
+            impl TryFrom<crate::versions::Version1DataFrame> for #name {
+                type Error = ();
+
+                #[inline]
+                fn try_from(value: crate::versions::Version1DataFrame) -> Result<Self, Self::Error> {
+                    value.value.try_into()
+                }
+            }
+
+            impl TryFrom<crate::VersionedDataFrame<crate::versions::Version1, crate::versions::Version1DataFrame>> for #name {
+                type Error = ();
+
+                #[inline]
+                fn try_from(value: crate::VersionedDataFrame<crate::versions::Version1, crate::versions::Version1DataFrame>) -> Result<Self, Self::Error> {
+                    value.data.value.try_into()
+                }
+            }
+        }
+    } else {
+        quote! {}
     };
 
     TokenStream::from(expanded)

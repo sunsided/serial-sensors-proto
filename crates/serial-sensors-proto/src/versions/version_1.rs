@@ -1,11 +1,9 @@
 //! A version 1 data frame.
 
+use crate::test::Test;
 use crate::versions::Version1;
 use crate::DataFrame;
-use bincode::{Decode, Encode};
-use serial_sensors_proto_traits::{
-    CompileTimeTypeInformation, RuntimeTypeInformation, SensorType, ValueType,
-};
+use bincode::Encode;
 
 /// A sensor data frame.
 #[derive(Encode, Debug, Clone, PartialEq)]
@@ -34,7 +32,7 @@ pub struct Version1DataFrame {
     pub sensor_tag: u16,
 
     /// The sensor reading.
-    pub value: Version1Data,
+    pub value: Test,
 }
 
 impl DataFrame for Version1DataFrame {
@@ -44,7 +42,7 @@ impl DataFrame for Version1DataFrame {
 impl Version1DataFrame {
     pub fn new<D>(global_sequence: u32, sensor_sequence: u32, sensor_tag: u16, value: D) -> Self
     where
-        D: Into<Version1Data>,
+        D: Into<Test>,
     {
         Self::new_with(global_sequence, sensor_sequence, sensor_tag, value.into())
     }
@@ -53,7 +51,7 @@ impl Version1DataFrame {
         global_sequence: u32,
         sensor_sequence: u32,
         sensor_tag: u16,
-        value: Version1Data,
+        value: Test,
     ) -> Self {
         Self {
             global_sequence,
@@ -74,93 +72,5 @@ impl ::bincode::Decode for Version1DataFrame {
             sensor_tag: bincode::Decode::decode(decoder)?,
             value: bincode::Decode::decode(decoder)?,
         })
-    }
-}
-
-/// Data formats.
-#[derive(Debug, Clone, PartialEq)]
-pub enum Version1Data {
-    SystemClockFrequency(crate::types::SystemClockFrequency),
-    AccelerometerI16(crate::types::AccelerometerI16),
-    MagnetometerI16(crate::types::MagnetometerI16),
-    TemperatureI16(crate::types::TemperatureI16),
-    GyroscopeI16(crate::types::GyroscopeI16),
-    EulerAnglesF32(crate::types::EulerAnglesF32),
-    OrientationQuaternionF32(crate::types::OrientationQuaternionF32),
-}
-
-impl RuntimeTypeInformation for Version1Data {
-    fn sensor(&self) -> SensorType {
-        match self {
-            Version1Data::SystemClockFrequency(_) => crate::types::SystemClockFrequency::SENSOR,
-            Version1Data::AccelerometerI16(_) => crate::types::AccelerometerI16::SENSOR,
-            Version1Data::MagnetometerI16(_) => crate::types::MagnetometerI16::SENSOR,
-            Version1Data::TemperatureI16(_) => crate::types::TemperatureI16::SENSOR,
-            Version1Data::GyroscopeI16(_) => crate::types::GyroscopeI16::SENSOR,
-            Version1Data::EulerAnglesF32(_) => crate::types::EulerAnglesF32::SENSOR,
-            Version1Data::OrientationQuaternionF32(_) => {
-                crate::types::OrientationQuaternionF32::SENSOR
-            }
-        }
-    }
-
-    fn field(&self) -> ValueType {
-        match self {
-            Version1Data::SystemClockFrequency(_) => crate::types::SystemClockFrequency::FIELD,
-            Version1Data::AccelerometerI16(_) => crate::types::AccelerometerI16::FIELD,
-            Version1Data::MagnetometerI16(_) => crate::types::MagnetometerI16::FIELD,
-            Version1Data::TemperatureI16(_) => crate::types::TemperatureI16::FIELD,
-            Version1Data::GyroscopeI16(_) => crate::types::GyroscopeI16::FIELD,
-            Version1Data::EulerAnglesF32(_) => crate::types::EulerAnglesF32::FIELD,
-            Version1Data::OrientationQuaternionF32(_) => {
-                crate::types::OrientationQuaternionF32::FIELD
-            }
-        }
-    }
-
-    fn num_components(&self) -> u8 {
-        match self {
-            Version1Data::SystemClockFrequency(_) => {
-                crate::types::SystemClockFrequency::NUM_COMPONENTS
-            }
-            Version1Data::AccelerometerI16(_) => crate::types::AccelerometerI16::NUM_COMPONENTS,
-            Version1Data::MagnetometerI16(_) => crate::types::MagnetometerI16::NUM_COMPONENTS,
-            Version1Data::TemperatureI16(_) => crate::types::TemperatureI16::NUM_COMPONENTS,
-            Version1Data::GyroscopeI16(_) => crate::types::GyroscopeI16::NUM_COMPONENTS,
-            Version1Data::EulerAnglesF32(_) => crate::types::EulerAnglesF32::NUM_COMPONENTS,
-            Version1Data::OrientationQuaternionF32(_) => {
-                crate::types::OrientationQuaternionF32::NUM_COMPONENTS
-            }
-        }
-    }
-}
-
-impl bincode::Encode for Version1Data {
-    fn encode<__E: bincode::enc::Encoder>(
-        &self,
-        encoder: &mut __E,
-    ) -> Result<(), bincode::error::EncodeError> {
-        match self {
-            Version1Data::SystemClockFrequency(value) => bincode::Encode::encode(&value, encoder)?,
-            Version1Data::AccelerometerI16(value) => bincode::Encode::encode(&value, encoder)?,
-            Version1Data::MagnetometerI16(value) => bincode::Encode::encode(&value, encoder)?,
-            Version1Data::TemperatureI16(value) => bincode::Encode::encode(&value, encoder)?,
-            Version1Data::GyroscopeI16(value) => bincode::Encode::encode(&value, encoder)?,
-            Version1Data::EulerAnglesF32(value) => bincode::Encode::encode(&value, encoder)?,
-            Version1Data::OrientationQuaternionF32(value) => {
-                bincode::Encode::encode(&value, encoder)?
-            }
-        }
-
-        Ok(())
-    }
-}
-
-impl ::bincode::Decode for Version1Data {
-    fn decode<__D: bincode::de::Decoder>(
-        decoder: &mut __D,
-    ) -> Result<Self, ::bincode::error::DecodeError> {
-        let v: u8 = bincode::Decode::decode(decoder)?;
-        todo!();
     }
 }
