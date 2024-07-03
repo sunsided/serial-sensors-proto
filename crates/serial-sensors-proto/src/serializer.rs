@@ -2,6 +2,7 @@ use crate::versions::{Version1, Version1DataFrame};
 use crate::{DataFrame, ProtocolVersion, VersionedDataFrame};
 use bincode::config::{Configuration, Fixint, LittleEndian};
 use bincode::error::{DecodeError, EncodeError};
+use core::ops::Range;
 use corncobs::CobsError;
 
 /// The serialization configuration.
@@ -13,7 +14,7 @@ pub(crate) const SERIALIZATION_CONFIG: Configuration<LittleEndian, Fixint> =
         .with_no_limit();
 
 /// Serializes data and applies byte stuffing.
-pub fn serialize<I, V, D>(frame: I, buffer: &mut [u8]) -> Result<&mut [u8], SerializationError>
+pub fn serialize<I, V, D>(frame: I, buffer: &mut [u8]) -> Result<Range<usize>, SerializationError>
 where
     I: Into<VersionedDataFrame<V, D>>,
     V: ProtocolVersion,
@@ -32,7 +33,7 @@ where
     }
 
     let encoded_length = corncobs::encode_buf(source, target);
-    Ok(&mut target[..encoded_length])
+    Ok(num_serialized..num_serialized + encoded_length)
 }
 
 /// Deserializes data after applying byte un-stuffing.
@@ -117,11 +118,11 @@ mod tests {
         // The serialization target buffer.
         let mut buffer = [0_u8; 48];
 
-        let buffer = serialize(frame, &mut buffer).unwrap();
-        assert_eq!(buffer.len(), 21);
+        let range = serialize(frame, &mut buffer).unwrap();
+        assert_eq!(range.len(), 21);
 
         // The deserialization target buffer.
-        let data = deserialize(buffer).unwrap();
+        let data = deserialize(&mut buffer[range]).unwrap();
         assert_eq!(data.version, Version1);
         assert_eq!(data.data.global_sequence, u32::MAX);
         assert_eq!(data.data.sensor_sequence, 12);
