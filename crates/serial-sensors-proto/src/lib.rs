@@ -10,7 +10,7 @@
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
-#![deny(unsafe_code)]
+#![cfg_attr(not(feature = "unsafe"), deny(unsafe_code))]
 #![deny(warnings, clippy::pedantic)]
 #![warn(
     clippy::expect_used,
