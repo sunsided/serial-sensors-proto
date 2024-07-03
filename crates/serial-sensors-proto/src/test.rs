@@ -36,9 +36,9 @@ pub enum SensorData {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::serializer::SERIALIZATION_CONFIG;
     use crate::types::AccelerometerI16;
     use crate::vector3::Vector3Data;
-    use crate::SERIALIZATION_CONFIG;
 
     #[test]
     fn test() {

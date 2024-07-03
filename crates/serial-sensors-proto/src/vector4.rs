@@ -16,8 +16,8 @@ pub struct Vector4Data<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::SERIALIZATION_CONFIG;
     use bincode;
+    use crate::serializer::SERIALIZATION_CONFIG;
 
     #[test]
     fn test_accelerometer_data_i16_serialization() {

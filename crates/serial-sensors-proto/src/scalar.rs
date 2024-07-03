@@ -10,7 +10,7 @@ pub struct ScalarData<T> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::SERIALIZATION_CONFIG;
+    use crate::serializer::SERIALIZATION_CONFIG;
     use bincode;
 
     #[test]
