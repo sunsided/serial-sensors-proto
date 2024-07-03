@@ -66,7 +66,7 @@ fn example() {
 
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 
-[msrv-image]: https://img.shields.io/badge/rustc-1.70+-blue.svg
+[msrv-image]: https://img.shields.io/badge/rustc-1.71+-blue.svg
 
 [license-eupl-image]: https://img.shields.io/badge/license-EUPL_1.2-blue.svg
 
