@@ -1,7 +1,6 @@
 #![cfg_attr(not(feature = "std"), no_std)]
 #![deny(unsafe_code)]
 
-use bincode::config::{Configuration, Fixint, LittleEndian};
 use bincode::Encode;
 
 pub mod scalar;
@@ -12,14 +11,10 @@ pub mod vector3;
 mod vector4;
 pub mod versions;
 
-/// The serialization configuration.
-const SERIALIZATION_CONFIG: Configuration<LittleEndian, Fixint> = bincode::config::standard()
-    .with_fixed_int_encoding()
-    .with_little_endian()
-    .with_no_limit();
+pub use serializer::*;
 
 /// A protocol version.
-pub trait ProtocolVersion: Default {
+pub trait ProtocolVersion: Default + bincode::Encode {
     /// The protocol version
     const VERSION: usize;
 
@@ -178,6 +173,7 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::serializer::SERIALIZATION_CONFIG;
     use crate::types::AccelerometerI16;
     use crate::vector3::Vector3Data;
     use crate::versions::{Version1, Version1DataFrame};
