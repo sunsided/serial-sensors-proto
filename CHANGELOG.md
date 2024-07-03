@@ -10,6 +10,13 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 - Added support for `micromath` types.
 - Added `Index` and `IndexMut` support for fundamental types.
 - Added `new` constructors for the fundamental types.
+- Added destructuring into tuples and vectors for fundamental types.
+- Added construction from tuples and vectors for fundamental types.
+
+### Internal
+
+- Now using [uniform-array-derive](https://crates.io/crates/uniform-array-derive) to implement array-like
+  behavior of fundamental types on `unsafe` crate feature.
 
 ### Changed
 

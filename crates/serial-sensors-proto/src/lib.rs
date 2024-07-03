@@ -7,6 +7,11 @@
 //! - The protocol is a little bit extensible in sensor and data types and supports 1-, 3- and 4-dimensional readings.
 //! - Data packets are serialized using [bincode](https://crates.io/crates/bincode) first, then byte-stuffed
 //!   using [corncobs](https://crates.io/crates/corncobs) (i.e. using Consistent Overhead Byte Stuffing, COBS).
+//!
+//! ## Crate features
+//! * `unsafe` - Enables representation of fundamental data types as slices.
+//! * `micromath` - Enables conversion to and from `micromath` vector types.
+//! * `quaternion` - Forwarded to micromath to enable quaternion support.
 
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
