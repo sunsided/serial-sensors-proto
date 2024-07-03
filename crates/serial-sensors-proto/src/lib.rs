@@ -1,10 +1,11 @@
-#![no_std]
+#![cfg_attr(not(feature = "std"), no_std)]
 #![deny(unsafe_code)]
 
 use bincode::config::{Configuration, Fixint, LittleEndian};
 use bincode::Encode;
 
 pub mod scalar;
+mod serializer;
 mod test;
 pub mod types;
 pub mod vector3;
@@ -41,7 +42,6 @@ where
     /// The data frame.
     pub data: D,
 }
-
 
 /// Sensor type tags.
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
@@ -140,7 +140,6 @@ pub trait RuntimeTypeInformation {
     /// The number of components
     fn num_components(&self) -> u8;
 }
-
 
 impl<V, D> Eq for VersionedDataFrame<V, D>
 where
