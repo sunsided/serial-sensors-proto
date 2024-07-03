@@ -13,4 +13,3 @@ alloc = ["bincode/alloc"]
 [dependencies]
 bincode = { version = "2.0.0-rc.3", default-features = false, features = ["derive"] }
 serial-sensors-proto-derive = { version = "*", path = "../serial-sensors-proto-derive" }
-serial-sensors-proto-traits = { version = "*", path = "../serial-sensors-proto-traits" }

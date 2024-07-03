@@ -1,7 +1,0 @@
-[package]
-name = "serial-sensors-proto-traits"
-description = "A simple wire format for transmitting MEMS sensor data and friends"
-version.workspace = true
-authors.workspace = true
-categories.workspace = true
-edition.workspace = true

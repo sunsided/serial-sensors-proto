@@ -2,7 +2,6 @@
 resolver = "2"
 members = [
     "crates/serial-sensors-proto",
-    "crates/serial-sensors-proto-traits",
     "crates/serial-sensors-proto-derive"
 ]
 default-members = [
