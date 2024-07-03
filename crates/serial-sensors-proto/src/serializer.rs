@@ -37,18 +37,20 @@ where
 }
 
 /// Deserializes data after applying byte un-stuffing.
+///
+/// Returns the number of bytes read from the buffer
 pub fn deserialize<B>(
     mut buffer: B,
-) -> Result<VersionedDataFrame<Version1, Version1DataFrame>, DeserializationError>
+) -> Result<(usize, VersionedDataFrame<Version1, Version1DataFrame>), DeserializationError>
 where
     B: core::borrow::BorrowMut<[u8]>,
 {
     let buffer = buffer.borrow_mut();
     // TODO: Ensure that sync recovery actually works.
-    let length = corncobs::decode_in_place(buffer)?;
-    let data = &buffer[..length];
+    let read_length = corncobs::decode_in_place(buffer)?;
+    let data = &buffer[..read_length];
     let (data, _) = bincode::decode_from_slice(data, SERIALIZATION_CONFIG)?;
-    Ok(data)
+    Ok((read_length, data))
 }
 
 /// A serialization error.
