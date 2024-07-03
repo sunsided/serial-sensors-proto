@@ -20,6 +20,34 @@ impl<T> Vector2Data<T> {
     }
 }
 
+impl<T> From<(T, T)> for Vector2Data<T> {
+    fn from(value: (T, T)) -> Self {
+        Vector2Data::new(value.0, value.1)
+    }
+}
+
+impl<T> From<Vector2Data<T>> for (T, T) {
+    fn from(value: Vector2Data<T>) -> Self {
+        (value.x, value.y)
+    }
+}
+
+impl<T> From<[T; 2]> for Vector2Data<T>
+where
+    T: Copy,
+{
+    fn from(value: [T; 2]) -> Self {
+        let (x, y) = value.into();
+        Self::new(x, y)
+    }
+}
+
+impl<T> From<Vector2Data<T>> for [T; 2] {
+    fn from(value: Vector2Data<T>) -> Self {
+        [value.x, value.y]
+    }
+}
+
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<C> From<Vector2Data<C>> for micromath::vector::Vector2d<C>

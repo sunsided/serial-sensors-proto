@@ -22,6 +22,34 @@ impl<T> Vector3Data<T> {
     }
 }
 
+impl<T> From<(T, T, T)> for Vector3Data<T> {
+    fn from(value: (T, T, T)) -> Self {
+        Vector3Data::new(value.0, value.1, value.2)
+    }
+}
+
+impl<T> From<Vector3Data<T>> for (T, T, T) {
+    fn from(value: Vector3Data<T>) -> Self {
+        (value.x, value.y, value.z)
+    }
+}
+
+impl<T> From<[T; 3]> for Vector3Data<T>
+where
+    T: Copy,
+{
+    fn from(value: [T; 3]) -> Self {
+        let (x, y, z) = value.into();
+        Self::new(x, y, z)
+    }
+}
+
+impl<T> From<Vector3Data<T>> for [T; 3] {
+    fn from(value: Vector3Data<T>) -> Self {
+        [value.x, value.y, value.z]
+    }
+}
+
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<C> From<Vector3Data<C>> for micromath::vector::Vector3d<C>

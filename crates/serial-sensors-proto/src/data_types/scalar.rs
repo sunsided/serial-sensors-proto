@@ -18,6 +18,28 @@ impl<T> ScalarData<T> {
     }
 }
 
+impl<T> From<T> for ScalarData<T> {
+    fn from(value: T) -> Self {
+        ScalarData::new(value)
+    }
+}
+
+impl<T> From<[T; 1]> for ScalarData<T>
+where
+    T: Copy,
+{
+    fn from(value: [T; 1]) -> Self {
+        let (x,) = value.into();
+        Self::new(x)
+    }
+}
+
+impl<T> From<ScalarData<T>> for [T; 1] {
+    fn from(value: ScalarData<T>) -> Self {
+        [value.value]
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;

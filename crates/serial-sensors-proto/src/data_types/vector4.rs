@@ -28,6 +28,34 @@ impl<T> Vector4Data<T> {
     }
 }
 
+impl<T> From<(T, T, T, T)> for Vector4Data<T> {
+    fn from(value: (T, T, T, T)) -> Self {
+        Vector4Data::new(value.0, value.1, value.2, value.3)
+    }
+}
+
+impl<T> From<Vector4Data<T>> for (T, T, T, T) {
+    fn from(value: Vector4Data<T>) -> Self {
+        (value.a, value.b, value.c, value.d)
+    }
+}
+
+impl<T> From<[T; 4]> for Vector4Data<T>
+where
+    T: Copy,
+{
+    fn from(value: [T; 4]) -> Self {
+        let (a, b, c, d) = value.into();
+        Self::new(a, b, c, d)
+    }
+}
+
+impl<T> From<Vector4Data<T>> for [T; 4] {
+    fn from(value: Vector4Data<T>) -> Self {
+        [value.a, value.b, value.c, value.d]
+    }
+}
+
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl From<Vector4Data<f32>> for micromath::Quaternion {
