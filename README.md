@@ -2,6 +2,16 @@
 
 > A simple wire format for transmitting MEMS sensor data and friends.
 
+The approach is threefold:
+
+- The protocol is a little bit extensible in sensor and data types and supports 1-, 3- and 4-dimensional readings.
+- Data packets are serialized using [bincode](https://crates.io/crates/bincode) first, then byte-stuffed
+  using [corncobs](https://crates.io/crates/corncobs) (i.e. using Consistent Overhead Byte Stuffing, COBS).
+
+On the receiving end, the entire process runs in reverse.
+
+---
+
 See [stm32f3disco-rust](https://github.com/sunsided/stm32f3disco-rust)
 and [serial-sensors](https://github.com/sunsided/serial-sensors)
 for an example. YMMV, but this is how it could work:
