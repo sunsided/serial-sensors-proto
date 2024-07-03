@@ -5,7 +5,7 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.2.0] - 2024-07-03
 
-[0.1.0]: https://github.com/sunsided/serialse-sensors-proto/releases/tag/v0.2.0
+[0.2.0]: https://github.com/sunsided/serial-sensors-proto/releases/tag/v0.2.0
 
 ### Added
 
@@ -27,7 +27,7 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [0.1.0] - 2024-07-03
 
-[0.1.0]: https://github.com/sunsided/serialse-sensors-proto/releases/tag/v0.1.0
+[0.1.0]: https://github.com/sunsided/serial-sensors-proto/releases/tag/v0.1.0
 
 ### Added
 
