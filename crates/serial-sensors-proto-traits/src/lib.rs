@@ -76,7 +76,7 @@ impl TryFrom<u8> for ValueType {
 }
 
 /// Sensor type information.
-pub trait CompileTimeTypeInformation2: Default {
+pub trait CompileTimeTypeInformation: Default {
     /// The sensor type.
     const TYPE_ID: u8;
 
@@ -91,7 +91,7 @@ pub trait CompileTimeTypeInformation2: Default {
 }
 
 /// Sensor type information.
-pub trait RuntimeTypeInformation2 {
+pub trait RuntimeTypeInformation {
     /// Returns the sensor type ID.
     fn sensor_type_id(&self) -> u8;
 

@@ -135,7 +135,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                 }
             }
 
-            impl ::serial_sensors_proto_traits::RuntimeTypeInformation2 for #name {
+            impl ::serial_sensors_proto_traits::RuntimeTypeInformation for #name {
                 fn sensor_type_id(&self) -> u8 {
                     match self {
                         #( #sensor_match_arms )*
@@ -162,7 +162,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                     &self,
                     encoder: &mut __E,
                 ) -> core::result::Result<(), ::bincode::error::EncodeError> {
-                    use serial_sensors_proto_traits::RuntimeTypeInformation2;
+                    use serial_sensors_proto_traits::RuntimeTypeInformation;
                     bincode::Encode::encode(&self.sensor_type_id(), encoder)?;
                     bincode::Encode::encode(&(self.value_type() as u8), encoder)?;
                     // don't encode the component count; sensor ID and type are enough
