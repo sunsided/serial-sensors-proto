@@ -3,6 +3,14 @@
 All notable changes to this project will be documented in this file.
 This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.2.3] - 2024-07-03
+
+[0.2.3]: https://github.com/sunsided/serial-sensors-proto/releases/tag/v0.2.3
+
+### Added
+
+- Adds `From<F> for S` with fundamental types and sensor types.
+
 ## [0.2.2] - 2024-07-03
 
 [0.2.2]: https://github.com/sunsided/serial-sensors-proto/releases/tag/v0.2.2

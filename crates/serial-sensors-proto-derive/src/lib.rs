@@ -255,6 +255,12 @@ pub fn derive_sensor_data_type(input: TokenStream) -> TokenStream {
                 }
             }
 
+            impl From<#field> for #name {
+                fn from(value: #field) -> #name {
+                    #name(value)
+                }
+            }
+
             impl TryFrom<crate::versions::Version1DataFrame> for #name {
                 type Error = ();
 
