@@ -10,7 +10,7 @@
 ![MSRV][msrv-image]
 [![EUPL 1.2 licensed][license-eupl-image]][license-eupl-link]
 
-The approach is threefold:
+The approach is twofold:
 
 - The protocol is a little bit extensible in sensor and data types and supports 1-, 3- and 4-dimensional readings.
 - Data packets are serialized using [bincode](https://crates.io/crates/bincode) first, then byte-stuffed
