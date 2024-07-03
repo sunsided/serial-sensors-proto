@@ -1,6 +1,6 @@
 //! A version 1 data frame.
 
-use crate::test::Test;
+use crate::test::SensorData;
 use crate::versions::Version1;
 use crate::DataFrame;
 use bincode::Encode;
@@ -32,7 +32,7 @@ pub struct Version1DataFrame {
     pub sensor_tag: u16,
 
     /// The sensor reading.
-    pub value: Test,
+    pub value: SensorData,
 }
 
 impl DataFrame for Version1DataFrame {
@@ -42,7 +42,7 @@ impl DataFrame for Version1DataFrame {
 impl Version1DataFrame {
     pub fn new<D>(global_sequence: u32, sensor_sequence: u32, sensor_tag: u16, value: D) -> Self
     where
-        D: Into<Test>,
+        D: Into<SensorData>,
     {
         Self::new_with(global_sequence, sensor_sequence, sensor_tag, value.into())
     }
@@ -51,7 +51,7 @@ impl Version1DataFrame {
         global_sequence: u32,
         sensor_sequence: u32,
         sensor_tag: u16,
-        value: Test,
+        value: SensorData,
     ) -> Self {
         Self {
             global_sequence,

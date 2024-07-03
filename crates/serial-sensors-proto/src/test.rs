@@ -3,7 +3,7 @@ use serial_sensors_proto_derive::SerialSensors;
 
 /// Data formats.
 #[derive(Debug, Clone, PartialEq, SerialSensors)]
-pub enum Test {
+pub enum SensorData {
     /// The system clock frequency, expressed in Hertz (Hz).
     #[sensor(id = 0x2, data = ValueType::UInt32, components = 1)]
     SystemClockFrequency(crate::types::SystemClockFrequency),
@@ -43,12 +43,12 @@ mod tests {
     #[test]
     fn test() {
         let instance =
-            Test::AccelerometerI16(AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }));
+            SensorData::AccelerometerI16(AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }));
         assert_eq!(instance.sensor_type_id(), 0x42);
         assert_eq!(instance.value_type(), ValueType::SInt16);
         assert_eq!(instance.num_components(), 3);
 
-        let value: Test = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }).into();
+        let value: SensorData = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }).into();
         assert_eq!(instance, value);
 
         let inner: AccelerometerI16 = value.try_into().unwrap();
@@ -59,7 +59,7 @@ mod tests {
 
     #[test]
     fn test_serialize() {
-        let value: Test = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }).into();
+        let value: SensorData = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 }).into();
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
@@ -78,7 +78,7 @@ mod tests {
         // Deserialize the data
         let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
             .expect("Failed to deserialize");
-        let deserialized: Test = result.0;
+        let deserialized: SensorData = result.0;
         let count = result.1;
 
         // Ensure the deserialized content is correct
