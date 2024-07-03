@@ -41,6 +41,8 @@ impl DataFrame for Version1DataFrame {
 }
 
 impl Version1DataFrame {
+    /// Creates a new instance of the version 1 data frame.
+    #[must_use]
     pub fn new<D>(global_sequence: u32, sensor_sequence: u32, sensor_tag: u16, value: D) -> Self
     where
         D: Into<SensorData>,
@@ -48,6 +50,8 @@ impl Version1DataFrame {
         Self::new_with(global_sequence, sensor_sequence, sensor_tag, value.into())
     }
 
+    /// Creates a new instance of the version 1 data frame.
+    #[must_use]
     pub const fn new_with(
         global_sequence: u32,
         sensor_sequence: u32,

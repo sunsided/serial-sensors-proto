@@ -1,5 +1,5 @@
 [workspace.package]
-version = "0.2.1"
+version = "0.2.2"
 description = "A simple wire format for transmitting MEMS sensor data and friends"
 authors = ["Markus Mayer <widemeadows@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc", "embedded", "hardware-support"]

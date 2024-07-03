@@ -35,7 +35,7 @@ use serial_sensors_proto_derive::SerialSensors;
 mod data_types;
 mod serializer;
 pub mod types;
-mod versions;
+pub mod versions;
 
 pub use data_types::*;
 pub use serializer::*;
