@@ -8,6 +8,7 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added support for `micromath` types.
+- Add `Index` and `IndexMut` support for fundamental types.
 
 ### Changed
 

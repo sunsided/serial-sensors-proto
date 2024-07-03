@@ -9,6 +9,31 @@ pub struct ScalarData<T> {
     pub value: T,
 }
 
+impl<T> core::ops::Index<usize> for ScalarData<T> {
+    type Output = T;
+
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index(&self, index: usize) -> &Self::Output {
+        if index == 0 {
+            &self.value
+        } else {
+            panic!("Index out of bounds")
+        }
+    }
+}
+impl<T> core::ops::IndexMut<usize> for ScalarData<T> {
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        if index == 0 {
+            &mut self.value
+        } else {
+            panic!("Index out of bounds")
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -43,5 +68,12 @@ mod tests {
         // Ensure the deserialized content is correct
         assert_eq!(deserialized, input_data);
         assert_eq!(count, 2);
+    }
+
+    #[test]
+    fn test_index() {
+        let reading = ScalarData::<u32> { value: 12 };
+
+        assert_eq!(reading[0], 12);
     }
 }

@@ -40,13 +40,42 @@ impl From<micromath::Quaternion> for Vector4Data<f32> {
     }
 }
 
+impl<T> core::ops::Index<usize> for Vector4Data<T> {
+    type Output = T;
+
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.a,
+            1 => &self.b,
+            2 => &self.c,
+            3 => &self.d,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+impl<T> core::ops::IndexMut<usize> for Vector4Data<T> {
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.a,
+            1 => &mut self.b,
+            2 => &mut self.c,
+            3 => &mut self.d,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::serializer::SERIALIZATION_CONFIG;
-    use bincode;
 
     #[test]
+    #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
         let accel_data = Vector4Data::<i16> {
             a: 100,
@@ -88,5 +117,20 @@ mod tests {
         // Ensure the deserialized content is correct
         assert_eq!(deserialized, accel_data);
         assert_eq!(count, 8);
+    }
+
+    #[test]
+    fn test_index() {
+        let reading = Vector4Data::<u32> {
+            a: 1,
+            b: 2,
+            c: 3,
+            d: 42,
+        };
+
+        assert_eq!(reading[0], 1);
+        assert_eq!(reading[1], 2);
+        assert_eq!(reading[2], 3);
+        assert_eq!(reading[3], 42);
     }
 }

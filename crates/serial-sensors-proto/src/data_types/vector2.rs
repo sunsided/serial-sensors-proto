@@ -39,18 +39,40 @@ where
     }
 }
 
+impl<T> core::ops::Index<usize> for Vector2Data<T> {
+    type Output = T;
+
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+impl<T> core::ops::IndexMut<usize> for Vector2Data<T> {
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.x,
+            1 => &mut self.y,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
+    use super::*;
     use crate::serializer::SERIALIZATION_CONFIG;
-    use crate::Vector3Data;
 
     #[test]
+    #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
-        let accel_data = Vector3Data::<i16> {
-            x: 100,
-            y: 200,
-            z: -300,
-        };
+        let accel_data = Vector2Data::<i16> { x: 100, y: 200 };
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
@@ -61,27 +83,33 @@ mod tests {
                 .expect("Failed to serialize");
 
         // Ensure the serialized length is correct
-        assert_eq!(num_serialized, 6);
+        assert_eq!(num_serialized, 4);
 
         // Ensure the serialized content is correct
-        let expected_bytes: [u8; 6] = [
+        let expected_bytes: [u8; 4] = [
             100_i16.to_le_bytes()[0],
             100_i16.to_le_bytes()[1],
             200_i16.to_le_bytes()[0],
             200_i16.to_le_bytes()[1],
-            (-300_i16).to_le_bytes()[0],
-            (-300_i16).to_le_bytes()[1],
         ];
         assert_eq!(&buffer[..num_serialized], &expected_bytes);
 
         // Deserialize the data
         let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
             .expect("Failed to deserialize");
-        let deserialized: Vector3Data<i16> = result.0;
+        let deserialized: Vector2Data<i16> = result.0;
         let count = result.1;
 
         // Ensure the deserialized content is correct
         assert_eq!(deserialized, accel_data);
-        assert_eq!(count, 6);
+        assert_eq!(count, 4);
+    }
+
+    #[test]
+    fn test_index() {
+        let reading = Vector2Data::<u32> { x: 1, y: 2 };
+
+        assert_eq!(reading[0], 1);
+        assert_eq!(reading[1], 2);
     }
 }

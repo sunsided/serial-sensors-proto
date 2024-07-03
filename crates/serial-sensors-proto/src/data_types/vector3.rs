@@ -43,13 +43,40 @@ where
     }
 }
 
+impl<T> core::ops::Index<usize> for Vector3Data<T> {
+    type Output = T;
+
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index(&self, index: usize) -> &Self::Output {
+        match index {
+            0 => &self.x,
+            1 => &self.y,
+            2 => &self.z,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+impl<T> core::ops::IndexMut<usize> for Vector3Data<T> {
+    #[allow(clippy::inline_always)]
+    #[inline(always)]
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        match index {
+            0 => &mut self.x,
+            1 => &mut self.y,
+            2 => &mut self.z,
+            _ => panic!("Index out of bounds"),
+        }
+    }
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use crate::serializer::SERIALIZATION_CONFIG;
-    use bincode;
 
     #[test]
+    #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
         let accel_data = Vector3Data::<i16> {
             x: 100,
@@ -88,5 +115,14 @@ mod tests {
         // Ensure the deserialized content is correct
         assert_eq!(deserialized, accel_data);
         assert_eq!(count, 6);
+    }
+
+    #[test]
+    fn test_index() {
+        let reading = Vector3Data::<u32> { x: 1, y: 2, z: 3 };
+
+        assert_eq!(reading[0], 1);
+        assert_eq!(reading[1], 2);
+        assert_eq!(reading[2], 3);
     }
 }
