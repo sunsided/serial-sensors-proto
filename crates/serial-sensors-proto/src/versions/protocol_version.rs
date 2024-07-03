@@ -1,5 +1,4 @@
 use crate::{DataFrame, VersionedDataFrame};
-use bincode::error::DecodeError;
 
 macro_rules! impl_version {
     ($comment:literal, $type:tt, $version:literal) => {
@@ -8,8 +7,8 @@ macro_rules! impl_version {
         pub struct $type;
 
         impl $type {
-            /// Wraps the specified [`VersionedDataFrame`](crate::VersionedDataFrame).
-            pub const fn frame<D>(data: D) -> crate::VersionedDataFrame<$type, D>
+            /// Wraps the specified [`VersionedDataFrame`](VersionedDataFrame).
+            pub const fn frame<D>(data: D) -> VersionedDataFrame<$type, D>
             where
                 D: DataFrame,
             {
@@ -33,23 +32,23 @@ macro_rules! impl_version {
             const VERSION: usize = $version;
         }
 
-        impl ::bincode::Encode for $type {
+        impl bincode::Encode for $type {
             fn encode<__E: ::bincode::enc::Encoder>(
                 &self,
                 encoder: &mut __E,
-            ) -> core::result::Result<(), ::bincode::error::EncodeError> {
+            ) -> core::result::Result<(), bincode::error::EncodeError> {
                 ::bincode::Encode::encode(&{ ($version) as u8 }, encoder)?;
                 Ok(())
             }
         }
 
-        impl ::bincode::Decode for Version1 {
+        impl bincode::Decode for Version1 {
             fn decode<__D: bincode::de::Decoder>(
                 decoder: &mut __D,
-            ) -> Result<Self, ::bincode::error::DecodeError> {
+            ) -> Result<Self, bincode::error::DecodeError> {
                 let v: u8 = bincode::Decode::decode(decoder)?;
                 if v != $version {
-                    Err(DecodeError::Other("invalid version"))
+                    Err(bincode::error::DecodeError::Other("invalid version"))
                 } else {
                     Ok(Self)
                 }
