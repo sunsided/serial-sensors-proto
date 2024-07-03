@@ -123,13 +123,10 @@ pub trait CompileTimeTypeInformation: Default {
     const TYPE_ID: u8;
 
     /// The field type.
-    const FIELD: ValueType;
+    const VALUE_TYPE: ValueType;
 
     /// The number of components of the vector.
     const NUM_COMPONENTS: u8;
-
-    /// The fundamental type used to represent the information.
-    type Target;
 }
 
 /// Sensor type information.

@@ -68,6 +68,12 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
             let variant_field_type = &variant.fields.fields[0].ty;
 
             from_impls.push(quote! {
+                impl crate::CompileTimeTypeInformation for #variant_field_type {
+                    const TYPE_ID: u8 = #sensor_type;
+                    const VALUE_TYPE: crate::ValueType = #field_type;
+                    const NUM_COMPONENTS: u8 = #num_components;
+                }
+
                 impl core::convert::From< #variant_field_type > for #name {
                     fn from(value: #variant_field_type) -> #name {
                         #name :: #variant_name ( value )
