@@ -2,6 +2,10 @@
 
 > A simple wire format for transmitting MEMS sensor data and friends.
 
+See [stm32f3disco-rust](https://github.com/sunsided/stm32f3disco-rust)
+and [serial-sensors](https://github.com/sunsided/serial-sensors)
+for an example. YMMV, but this is how it could work:
+
 ```rust
 fn example() {
     let value = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 });
