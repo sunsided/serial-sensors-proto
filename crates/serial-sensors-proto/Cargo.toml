@@ -1,0 +1,15 @@
+[package]
+name = "serial-sensors-proto"
+description = "A simple wire format for transmitting MEMS sensor data and friends"
+version.workspace = true
+authors.workspace = true
+categories.workspace = true
+edition.workspace = true
+
+[features]
+std = ["bincode/std"]
+alloc = ["bincode/alloc"]
+
+[dependencies]
+bincode = { version = "2.0.0-rc.3", default-features = false, features = ["derive"] }
+serial-sensors-proto-derive = { version = "*", path = "../serial-sensors-proto-derive" }

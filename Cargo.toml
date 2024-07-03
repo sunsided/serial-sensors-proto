@@ -1,14 +1,16 @@
-[package]
-name = "serial-sensors-proto"
+[workspace]
+resolver = "2"
+members = [
+    "crates/serial-sensors-proto",
+    "crates/serial-sensors-proto-derive"
+]
+default-members = [
+    "crates/serial-sensors-proto"
+]
+
+[workspace.package]
 version = "0.1.0"
 description = "A simple wire format for transmitting MEMS sensor data and friends"
 authors = ["Markus Mayer <widemeadows@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc", "embedded", "hardware-support"]
 edition = "2021"
-
-[features]
-std = ["bincode/std"]
-alloc = ["bincode/alloc"]
-
-[dependencies]
-bincode = { version = "2.0.0-rc.3", default-features = false, features = ["derive"] }
