@@ -1,7 +1,8 @@
 use bincode::{Decode, Encode};
+use uniform_array_derive::UniformArray;
 
 /// A three-dimensional vector.
-#[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[repr(C)]
@@ -18,16 +19,6 @@ impl<T> Vector3Data<T> {
     /// Initializes a new [`Vector3Data`] instance.
     pub const fn new(x: T, y: T, z: T) -> Self {
         Self { x, y, z }
-    }
-
-    /// Returns the number of components of the [`Vector3Data`] vector. Always `3`.
-    pub const fn len(&self) -> usize {
-        3
-    }
-
-    /// Provided for symmetry to [`len`]. Always returns `false`.
-    pub const fn is_empty(&self) -> bool {
-        false
     }
 }
 
@@ -57,33 +48,6 @@ where
             x: value.x,
             y: value.y,
             z: value.z,
-        }
-    }
-}
-
-impl<T> core::ops::Index<usize> for Vector3Data<T> {
-    type Output = T;
-
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index(&self, index: usize) -> &Self::Output {
-        match index {
-            0 => &self.x,
-            1 => &self.y,
-            2 => &self.z,
-            _ => panic!("Index out of bounds"),
-        }
-    }
-}
-impl<T> core::ops::IndexMut<usize> for Vector3Data<T> {
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        match index {
-            0 => &mut self.x,
-            1 => &mut self.y,
-            2 => &mut self.z,
-            _ => panic!("Index out of bounds"),
         }
     }
 }

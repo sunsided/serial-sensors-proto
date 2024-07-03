@@ -1,7 +1,8 @@
 use bincode::{Decode, Encode};
+use uniform_array_derive::UniformArray;
 
 /// A four-dimensional vector, Quaternion, etc.
-#[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[repr(C)]
@@ -25,16 +26,6 @@ impl<T> Vector4Data<T> {
     pub const fn new(a: T, b: T, c: T, d: T) -> Self {
         Self { a, b, c, d }
     }
-
-    /// Returns the number of components of the [`Vector4Data`] vector. Always `4`.
-    pub const fn len(&self) -> usize {
-        4
-    }
-
-    /// Provided for symmetry to [`len`]. Always returns `false`.
-    pub const fn is_empty(&self) -> bool {
-        false
-    }
 }
 
 #[cfg(feature = "alloc")]
@@ -54,35 +45,6 @@ impl From<micromath::Quaternion> for Vector4Data<f32> {
             b: value.y(),
             c: value.z(),
             d: value.w(),
-        }
-    }
-}
-
-impl<T> core::ops::Index<usize> for Vector4Data<T> {
-    type Output = T;
-
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index(&self, index: usize) -> &Self::Output {
-        match index {
-            0 => &self.a,
-            1 => &self.b,
-            2 => &self.c,
-            3 => &self.d,
-            _ => panic!("Index out of bounds"),
-        }
-    }
-}
-impl<T> core::ops::IndexMut<usize> for Vector4Data<T> {
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        match index {
-            0 => &mut self.a,
-            1 => &mut self.b,
-            2 => &mut self.c,
-            3 => &mut self.d,
-            _ => panic!("Index out of bounds"),
         }
     }
 }

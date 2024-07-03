@@ -1,7 +1,8 @@
 use bincode::{Decode, Encode};
+use uniform_array_derive::UniformArray;
 
 /// Scalar data.
-#[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[repr(C)]
@@ -14,41 +15,6 @@ impl<T> ScalarData<T> {
     /// Initializes a new [`ScalarData`] instance.
     pub const fn new(value: T) -> Self {
         Self { value }
-    }
-
-    /// Returns the number of components of the [`ScalarData`] vector. Always `1`.
-    pub const fn len(&self) -> usize {
-        1
-    }
-
-    /// Provided for symmetry to [`len`]. Always returns `false`.
-    pub const fn is_empty(&self) -> bool {
-        false
-    }
-}
-
-impl<T> core::ops::Index<usize> for ScalarData<T> {
-    type Output = T;
-
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index(&self, index: usize) -> &Self::Output {
-        if index == 0 {
-            &self.value
-        } else {
-            panic!("Index out of bounds")
-        }
-    }
-}
-impl<T> core::ops::IndexMut<usize> for ScalarData<T> {
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        if index == 0 {
-            &mut self.value
-        } else {
-            panic!("Index out of bounds")
-        }
     }
 }
 

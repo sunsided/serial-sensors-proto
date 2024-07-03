@@ -1,7 +1,8 @@
 use bincode::{Decode, Encode};
+use uniform_array_derive::UniformArray;
 
 /// A two-dimensional vector.
-#[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[repr(C)]
@@ -16,16 +17,6 @@ impl<T> Vector2Data<T> {
     /// Initializes a new [`Vector2Data`] instance.
     pub const fn new(x: T, y: T) -> Self {
         Self { x, y }
-    }
-
-    /// Returns the number of components of the [`Vector2Data`] vector. Always `2`.
-    pub const fn len(&self) -> usize {
-        2
-    }
-
-    /// Provided for symmetry to [`len`]. Always returns `false`.
-    pub const fn is_empty(&self) -> bool {
-        false
     }
 }
 
@@ -53,31 +44,6 @@ where
         Self {
             x: value.x,
             y: value.y,
-        }
-    }
-}
-
-impl<T> core::ops::Index<usize> for Vector2Data<T> {
-    type Output = T;
-
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index(&self, index: usize) -> &Self::Output {
-        match index {
-            0 => &self.x,
-            1 => &self.y,
-            _ => panic!("Index out of bounds"),
-        }
-    }
-}
-impl<T> core::ops::IndexMut<usize> for Vector2Data<T> {
-    #[allow(clippy::inline_always)]
-    #[inline(always)]
-    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
-        match index {
-            0 => &mut self.x,
-            1 => &mut self.y,
-            _ => panic!("Index out of bounds"),
         }
     }
 }
