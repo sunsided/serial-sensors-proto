@@ -1,8 +1,7 @@
 //! A version 1 data frame.
 
-use crate::test::SensorData;
 use crate::versions::Version1;
-use crate::DataFrame;
+use crate::{DataFrame, SensorData};
 use bincode::Encode;
 
 /// A sensor data frame.
