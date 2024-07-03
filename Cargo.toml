@@ -9,8 +9,11 @@ default-members = [
 ]
 
 [workspace.package]
-version = "0.1.0"
+version = "0.1.0-alpha.1"
 description = "A simple wire format for transmitting MEMS sensor data and friends"
 authors = ["Markus Mayer <widemeadows@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc", "embedded", "hardware-support"]
 edition = "2021"
+license = "EUPL-1.2"
+repository = "https://github.com/sunsided/serial-sensors-proto"
+homepage = "https://github.com/sunsided/serial-sensors-proto"
