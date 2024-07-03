@@ -76,35 +76,6 @@ impl TryFrom<u8> for ValueType {
 }
 
 /// Sensor type information.
-#[deprecated]
-pub trait CompileTimeTypeInformation: Default {
-    /// The sensor type.
-    const SENSOR: SensorType;
-
-    /// The field type.
-    const FIELD: ValueType;
-
-    /// The number of components of the vector.
-    const NUM_COMPONENTS: u8;
-
-    /// The fundamental type used to represent the information.
-    type Target;
-}
-
-/// Sensor type information.
-#[deprecated]
-pub trait RuntimeTypeInformation {
-    /// Returns the sensor type.
-    fn sensor(&self) -> SensorType;
-
-    /// Returns the field value type.
-    fn field(&self) -> ValueType;
-
-    /// The number of components
-    fn num_components(&self) -> u8;
-}
-
-/// Sensor type information.
 pub trait CompileTimeTypeInformation2: Default {
     /// The sensor type.
     const TYPE_ID: u8;
