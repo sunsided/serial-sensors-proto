@@ -122,7 +122,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                     }
                 }
 
-                pub const fn value_type(&self) -> ::serial_sensors_proto_traits::ValueType {
+                pub const fn value_type(&self) -> crate::ValueType {
                     match self {
                         #( #field_match_arms )*
                     }
@@ -135,14 +135,14 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                 }
             }
 
-            impl ::serial_sensors_proto_traits::RuntimeTypeInformation for #name {
+            impl crate::RuntimeTypeInformation for #name {
                 fn sensor_type_id(&self) -> u8 {
                     match self {
                         #( #sensor_match_arms )*
                     }
                 }
 
-                fn value_type(&self) -> ::serial_sensors_proto_traits::ValueType {
+                fn value_type(&self) -> crate::ValueType {
                     match self {
                         #( #field_match_arms )*
                     }
@@ -162,7 +162,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                     &self,
                     encoder: &mut __E,
                 ) -> core::result::Result<(), ::bincode::error::EncodeError> {
-                    use serial_sensors_proto_traits::RuntimeTypeInformation;
+                    use crate::RuntimeTypeInformation;
                     bincode::Encode::encode(&self.sensor_type_id(), encoder)?;
                     bincode::Encode::encode(&(self.value_type() as u8), encoder)?;
                     // don't encode the component count; sensor ID and type are enough
@@ -179,7 +179,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                 ) -> Result<Self, ::bincode::error::DecodeError> {
                     let type_id: u8 = bincode::Decode::decode(decoder)?;
                     let value_type: u8 = bincode::Decode::decode(decoder)?;
-                    let value_type = serial_sensors_proto_traits::ValueType::try_from(value_type).map_err(|_| ::bincode::error::DecodeError::Other("An unknown combination of type ID and value type was detected"))?;
+                    let value_type = crate::ValueType::try_from(value_type).map_err(|_| ::bincode::error::DecodeError::Other("An unknown combination of type ID and value type was detected"))?;
                     match (type_id, value_type) {
                         #( #decode_match_arms )*,
                         _ => Err(::bincode::error::DecodeError::Other("An unknown combination of type ID and value type was detected"))

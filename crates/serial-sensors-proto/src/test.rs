@@ -1,5 +1,5 @@
+use crate::ValueType;
 use serial_sensors_proto_derive::SerialSensors;
-use serial_sensors_proto_traits::ValueType;
 
 /// Data formats.
 #[derive(Debug, Clone, PartialEq, SerialSensors)]
