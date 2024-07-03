@@ -3,6 +3,7 @@ use bincode::{Decode, Encode};
 /// Scalar data.
 #[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
+#[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 pub struct ScalarData<T> {
     /// The value.
     pub value: T,
@@ -12,9 +13,9 @@ pub struct ScalarData<T> {
 mod tests {
     use super::*;
     use crate::serializer::SERIALIZATION_CONFIG;
-    use bincode;
 
     #[test]
+    #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
         let input_data = ScalarData::<i16> { value: 100 };
 

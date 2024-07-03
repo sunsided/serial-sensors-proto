@@ -3,6 +3,7 @@ use bincode::{Decode, Encode};
 /// A four-dimensional vector, Quaternion, etc.
 #[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
 #[allow(clippy::module_name_repetitions)]
+#[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 pub struct Vector4Data<T> {
     /// First vector component.
     /// In quaternions, this resembles the `x` axis.
