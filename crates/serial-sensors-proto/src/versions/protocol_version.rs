@@ -1,17 +1,6 @@
 use crate::{DataFrame, VersionedDataFrame};
 use bincode::error::DecodeError;
 
-/// A protocol version.
-pub trait ProtocolVersion: Default + bincode::Encode + bincode::Decode {
-    /// The protocol version
-    const VERSION: usize;
-
-    /// Returns the protocol version
-    fn version(&self) -> usize {
-        Self::VERSION
-    }
-}
-
 macro_rules! impl_version {
     ($comment:literal, $type:tt, $version:literal) => {
         #[doc = $comment]

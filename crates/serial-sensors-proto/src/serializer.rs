@@ -105,8 +105,8 @@ impl core::fmt::Display for DeserializationError {
 mod tests {
     use super::*;
     use crate::types::AccelerometerI16;
-    use crate::vector3::Vector3Data;
     use crate::versions::Version1DataFrame;
+    use crate::Vector3Data;
 
     #[test]
     fn test_serialize() {
