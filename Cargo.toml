@@ -5,6 +5,7 @@ authors = ["Markus Mayer <widemeadows@gmail.com>"]
 categories = ["no-std", "no-std::no-alloc", "embedded", "hardware-support"]
 edition = "2021"
 license = "EUPL-1.2"
+rust-version = "1.70.0"
 repository = "https://github.com/sunsided/serial-sensors-proto"
 homepage = "https://github.com/sunsided/serial-sensors-proto"
 

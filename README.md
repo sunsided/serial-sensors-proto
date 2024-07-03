@@ -62,11 +62,11 @@ fn example() {
 
 [build-link]: https://github.com/sunsided/serial-sensors-proto/actions
 
-[safety-image]: https://img.shields.io/badge/unsafe-forbidden-success.svg
+[safety-image]: https://img.shields.io/badge/unsafe-optional-success.svg
 
 [safety-link]: https://github.com/rust-secure-code/safety-dance/
 
-[msrv-image]: https://img.shields.io/badge/rustc-1.67+-blue.svg
+[msrv-image]: https://img.shields.io/badge/rustc-1.70+-blue.svg
 
 [license-eupl-image]: https://img.shields.io/badge/license-EUPL_1.2-blue.svg
 
