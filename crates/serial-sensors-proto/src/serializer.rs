@@ -2,6 +2,7 @@ use crate::versions::{Version1, Version1DataFrame};
 use crate::{DataFrame, ProtocolVersion, VersionedDataFrame};
 use bincode::config::{Configuration, Fixint, LittleEndian};
 use bincode::error::{DecodeError, EncodeError};
+use bincode::Encode;
 use core::ops::Range;
 use corncobs::CobsError;
 
@@ -14,11 +15,15 @@ pub(crate) const SERIALIZATION_CONFIG: Configuration<LittleEndian, Fixint> =
         .with_no_limit();
 
 /// Serializes data and applies byte stuffing.
+///
+/// ## Errors
+/// The function returns an error when serialization failed, or when either serialization
+/// or byte stuffing resulted in a buffer overrun.
 pub fn serialize<I, V, D>(frame: I, buffer: &mut [u8]) -> Result<Range<usize>, SerializationError>
 where
     I: Into<VersionedDataFrame<V, D>>,
     V: ProtocolVersion,
-    D: DataFrame,
+    D: DataFrame + Encode,
 {
     let frame = frame.into();
     let num_serialized = bincode::encode_into_slice(frame, buffer, SERIALIZATION_CONFIG)?;
@@ -39,6 +44,10 @@ where
 /// Deserializes data after applying byte un-stuffing.
 ///
 /// Returns the number of bytes read from the buffer
+///
+/// ## Errors
+/// Returns an error when byte un-stuffing failed, e.g. due to a buffer under-run or corrupted data,
+/// or when deserialization failed due to unknown wire data.
 pub fn deserialize(
     buffer: &mut [u8],
 ) -> Result<(usize, VersionedDataFrame<Version1, Version1DataFrame>), DeserializationError> {
@@ -92,7 +101,7 @@ impl From<DecodeError> for DeserializationError {
 }
 
 impl core::fmt::Display for DeserializationError {
-    fn fmt(&self, f: &mut core::fmt::Formatter) -> core::fmt::Result {
+    fn fmt(&self, f: &mut core::fmt::Formatter<'_>) -> core::fmt::Result {
         match self {
             DeserializationError::Truncated => f.write_str("input truncated"),
             DeserializationError::Corrupt => f.write_str("input corrupt"),

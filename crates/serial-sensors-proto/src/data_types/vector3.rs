@@ -2,6 +2,7 @@ use bincode::{Decode, Encode};
 
 /// A three-dimensional vector.
 #[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[allow(clippy::module_name_repetitions)]
 pub struct Vector3Data<T> {
     /// First vector component.
     pub x: T,

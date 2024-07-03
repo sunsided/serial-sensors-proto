@@ -2,6 +2,7 @@ use bincode::{Decode, Encode};
 
 /// A two-dimensional vector.
 #[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[allow(clippy::module_name_repetitions)]
 pub struct Vector2Data<T> {
     /// First vector component.
     pub x: T,

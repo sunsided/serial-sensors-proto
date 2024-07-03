@@ -2,6 +2,7 @@ use bincode::{Decode, Encode};
 
 /// Scalar data.
 #[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[allow(clippy::module_name_repetitions)]
 pub struct ScalarData<T> {
     /// The value.
     pub value: T,

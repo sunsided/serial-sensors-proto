@@ -1,3 +1,5 @@
+//! Provides standard sensor types.
+
 use bincode::{Decode, Encode};
 use serial_sensors_proto_derive::SensorDataType;
 

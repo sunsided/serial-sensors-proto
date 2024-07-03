@@ -121,18 +121,21 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
     } else {
         quote! {
             impl #name {
+                /// Provides the sensor type ID.
                 pub const fn sensor_type_id(&self) -> u8 {
                     match self {
                         #( #sensor_match_arms )*
                     }
                 }
 
+                /// Provides the value type.
                 pub const fn value_type(&self) -> crate::ValueType {
                     match self {
                         #( #field_match_arms )*
                     }
                 }
 
+                /// Provides the number of components of the data type.
                 pub const fn num_components(&self) -> u8 {
                     match self {
                         #( #num_components_match_arms )*

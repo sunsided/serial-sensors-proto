@@ -45,6 +45,31 @@ jobs:
       - name: Clippy
         run: cargo clippy --all-features
 
+  check-msrv:
+    name: Check MSRV
+    needs:
+      - codespell
+      - lint
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rust-version: [ 1.67.0, 1.79.0, stable, nightly ]
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          toolchain: ${{ matrix.rust-version }}
+
+      - name: Install dependencies
+        run: cargo fetch
+
+      - name: Check MSRV
+        run: cargo check --all-targets --verbose
+
   docs:
     name: Build documentation
     needs:

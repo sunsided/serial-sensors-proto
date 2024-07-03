@@ -1,6 +1,27 @@
+//! # serial-sensors-proto
+//!
+//! > A simple wire format for transmitting MEMS sensor data and friends.
+//!
+//! The approach is threefold:
+//!
+//! - The protocol is a little bit extensible in sensor and data types and supports 1-, 3- and 4-dimensional readings.
+//! - Data packets are serialized using [bincode](https://crates.io/crates/bincode) first, then byte-stuffed
+//!   using [corncobs](https://crates.io/crates/corncobs) (i.e. using Consistent Overhead Byte Stuffing, COBS).
+
 #![cfg_attr(not(feature = "std"), no_std)]
 #![cfg_attr(docsrs, feature(doc_cfg))]
 #![deny(unsafe_code)]
+#![deny(warnings, clippy::pedantic)]
+#![warn(
+    clippy::expect_used,
+    clippy::missing_errors_doc,
+    clippy::unwrap_used,
+    missing_debug_implementations,
+    missing_docs,
+    rust_2018_idioms,
+    rust_2021_compatibility,
+    unused_qualifications
+)]
 
 use bincode::Encode;
 use serial_sensors_proto_derive::SerialSensors;
@@ -14,7 +35,7 @@ pub use data_types::*;
 pub use serializer::*;
 
 /// A protocol version.
-pub trait ProtocolVersion: Default + bincode::Encode {
+pub trait ProtocolVersion: Default + Encode {
     /// The protocol version
     const VERSION: usize;
 
@@ -43,31 +64,31 @@ where
 pub enum SensorData {
     /// The system clock frequency, expressed in Hertz (Hz).
     #[sensor(id = 0x2, data = ValueType::UInt32, components = 1)]
-    SystemClockFrequency(crate::types::SystemClockFrequency),
+    SystemClockFrequency(types::SystemClockFrequency),
 
     /// A sensor that measures the gravity vector, typically expressed in "g".
     #[sensor(id = 0x42, data = ValueType::SInt16, components = 3)]
-    AccelerometerI16(crate::types::AccelerometerI16),
+    AccelerometerI16(types::AccelerometerI16),
 
     /// A sensor that measures magnetic field strength, typically expressed in units auf Milli-Gauss (mG).
     #[sensor(id = 0x43, data = ValueType::SInt16, components = 3)]
-    MagnetometerI16(crate::types::MagnetometerI16),
+    MagnetometerI16(types::MagnetometerI16),
 
     /// A sensor that measures temperature, typically expressed in °C.
     #[sensor(id = 0x44, data = ValueType::SInt16, components = 1)]
-    TemperatureI16(crate::types::TemperatureI16),
+    TemperatureI16(types::TemperatureI16),
 
     /// A sensor that measures angular acceleration, typically expressed in degrees/second.
     #[sensor(id = 0x45, data = ValueType::SInt16, components = 1)]
-    GyroscopeI16(crate::types::GyroscopeI16),
+    GyroscopeI16(types::GyroscopeI16),
 
     /// Euler angles, in radians.
     #[sensor(id = 0xF0, data = ValueType::Float32, components = 3)]
-    EulerAnglesF32(crate::types::EulerAnglesF32),
+    EulerAnglesF32(types::EulerAnglesF32),
 
     /// An orientation quaternion.
     #[sensor(id = 0xF1, data = ValueType::Float32, components = 4)]
-    OrientationQuaternionF32(crate::types::OrientationQuaternionF32),
+    OrientationQuaternionF32(types::OrientationQuaternionF32),
 }
 
 /// Sensor type tags.
@@ -176,9 +197,11 @@ where
 }
 
 /// Marker type for data frames.
-pub trait DataFrame: Sized + bincode::Encode + bincode::Decode {
+pub trait DataFrame: Sized + bincode::Decode {
+    /// The protocol version used by this data frame.
     type ProtocolVersion: ProtocolVersion;
 
+    /// Wraps this data frame into a [`VersionedDataFrame`] using the specified [`ProtocolVersion`].
     fn into_versioned(self) -> VersionedDataFrame<Self::ProtocolVersion, Self> {
         VersionedDataFrame {
             version: Self::ProtocolVersion::default(),
@@ -205,9 +228,9 @@ where
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::serializer::SERIALIZATION_CONFIG;
-    use crate::types::AccelerometerI16;
-    use crate::versions::{Version1, Version1DataFrame};
+    use serializer::SERIALIZATION_CONFIG;
+    use types::AccelerometerI16;
+    use versions::{Version1, Version1DataFrame};
 
     #[test]
     fn frame_from_version() {
