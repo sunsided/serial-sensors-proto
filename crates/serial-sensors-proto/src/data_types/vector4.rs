@@ -20,6 +20,23 @@ pub struct Vector4Data<T> {
     pub d: T,
 }
 
+impl<T> Vector4Data<T> {
+    /// Initializes a new [`Vector4Data`] instance.
+    pub const fn new(a: T, b: T, c: T, d: T) -> Self {
+        Self { a, b, c, d }
+    }
+
+    /// Returns the number of components of the [`Vector4Data`] vector. Always `4`.
+    pub const fn len(&self) -> usize {
+        4
+    }
+
+    /// Provided for symmetry to [`len`]. Always returns `false`.
+    pub const fn is_empty(&self) -> bool {
+        false
+    }
+}
+
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl From<Vector4Data<f32>> for micromath::Quaternion {
@@ -78,12 +95,7 @@ mod tests {
     #[test]
     #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
-        let accel_data = Vector4Data::<i16> {
-            a: 100,
-            b: 200,
-            c: -300,
-            d: 12,
-        };
+        let accel_data = Vector4Data::<i16>::new(100, 200, -300, 12);
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
@@ -133,5 +145,7 @@ mod tests {
         assert_eq!(reading[1], 2);
         assert_eq!(reading[2], 3);
         assert_eq!(reading[3], 42);
+        assert_eq!(reading.len(), 4);
+        assert!(!reading.is_empty());
     }
 }

@@ -10,6 +10,23 @@ pub struct ScalarData<T> {
     pub value: T,
 }
 
+impl<T> ScalarData<T> {
+    /// Initializes a new [`ScalarData`] instance.
+    pub const fn new(value: T) -> Self {
+        Self { value }
+    }
+
+    /// Returns the number of components of the [`ScalarData`] vector. Always `1`.
+    pub const fn len(&self) -> usize {
+        1
+    }
+
+    /// Provided for symmetry to [`len`]. Always returns `false`.
+    pub const fn is_empty(&self) -> bool {
+        false
+    }
+}
+
 impl<T> core::ops::Index<usize> for ScalarData<T> {
     type Output = T;
 
@@ -43,7 +60,7 @@ mod tests {
     #[test]
     #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
-        let input_data = ScalarData::<i16> { value: 100 };
+        let input_data = ScalarData::<i16>::new(100);
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
@@ -76,5 +93,7 @@ mod tests {
         let reading = ScalarData::<u32> { value: 12 };
 
         assert_eq!(reading[0], 12);
+        assert_eq!(reading.len(), 1);
+        assert!(!reading.is_empty());
     }
 }

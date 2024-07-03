@@ -12,6 +12,23 @@ pub struct Vector2Data<T> {
     pub y: T,
 }
 
+impl<T> Vector2Data<T> {
+    /// Initializes a new [`Vector2Data`] instance.
+    pub const fn new(x: T, y: T) -> Self {
+        Self { x, y }
+    }
+
+    /// Returns the number of components of the [`Vector2Data`] vector. Always `2`.
+    pub const fn len(&self) -> usize {
+        2
+    }
+
+    /// Provided for symmetry to [`len`]. Always returns `false`.
+    pub const fn is_empty(&self) -> bool {
+        false
+    }
+}
+
 #[cfg(feature = "alloc")]
 #[cfg_attr(docsrs, doc(cfg(feature = "alloc")))]
 impl<C> From<Vector2Data<C>> for micromath::vector::Vector2d<C>
@@ -73,7 +90,7 @@ mod tests {
     #[test]
     #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
-        let accel_data = Vector2Data::<i16> { x: 100, y: 200 };
+        let accel_data = Vector2Data::<i16>::new(100, 200);
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
@@ -112,5 +129,7 @@ mod tests {
 
         assert_eq!(reading[0], 1);
         assert_eq!(reading[1], 2);
+        assert_eq!(reading.len(), 2);
+        assert!(!reading.is_empty());
     }
 }

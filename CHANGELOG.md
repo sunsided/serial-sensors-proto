@@ -8,7 +8,8 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Added support for `micromath` types.
-- Add `Index` and `IndexMut` support for fundamental types.
+- Added `Index` and `IndexMut` support for fundamental types.
+- Added `new` constructors for the fundamental types.
 
 ### Changed
 
