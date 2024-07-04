@@ -2,7 +2,7 @@ use crate::versions::Version1DataFrame;
 use crate::{ComponentLookupError, SensorData, ValueType};
 use bincode::{Decode, Encode};
 
-/// Identifies a sensor.
+/// Identifies a sensor. See also [`SensorIds`].
 #[derive(Encode, Decode, Default, Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct SensorId(pub(crate) u16, pub(crate) u8, pub(crate) ValueType);
@@ -25,6 +25,13 @@ impl SensorId {
             frame.value.sensor_type_id(),
             frame.value.value_type(),
         )
+    }
+
+    /// Consumes self and returns a new [`SensorId`] that has tag.
+    #[must_use]
+    pub const fn with_sensor_tag(mut self, tag: u16) -> Self {
+        self.0 = tag;
+        self
     }
 
     /// Returns the sensor tag.

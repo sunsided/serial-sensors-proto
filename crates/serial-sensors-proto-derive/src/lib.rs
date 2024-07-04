@@ -3,7 +3,7 @@ extern crate proc_macro;
 use darling::ast::Fields;
 use darling::{FromDeriveInput, FromMeta, FromVariant};
 use proc_macro::TokenStream;
-use quote::quote;
+use quote::{format_ident, quote};
 use std::collections::HashSet;
 use syn::{parse_macro_input, DeriveInput, Field, Path, Type};
 
@@ -44,6 +44,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
     let mut encode_match_arms = Vec::new();
     let mut decode_match_arms = Vec::new();
     let mut components_lookup_match_arms = Vec::new();
+    let mut sensor_ids_variants = Vec::new();
 
     let mut sensor_types = HashSet::new();
     let mut duplicate_error = None;
@@ -118,6 +119,11 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
             components_lookup_match_arms.push(quote! {
                 (#sensor_type, #field_type) => Ok(#num_components),
             });
+
+            let upper_variant = format_ident!("{}", variant_name.to_string().to_uppercase());
+            sensor_ids_variants.push(quote! {
+                const #upper_variant : SensorId = SensorId(0x00, #sensor_type, #field_type);
+            });
         }
     }
 
@@ -174,6 +180,13 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                         #( #num_components_match_arms )*
                     }
                 }
+            }
+
+            /// Provides generic [`SensorId`] implementations.
+            pub struct SensorIds;
+
+            impl SensorIds {
+                #( #sensor_ids_variants )*
             }
 
             #( #from_impls )*
