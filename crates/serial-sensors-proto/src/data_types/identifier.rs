@@ -1,24 +1,67 @@
-use bincode::{Decode, Encode};
+use bincode::de::{BorrowDecoder, Decoder};
+use bincode::enc::Encoder;
+use bincode::error::{DecodeError, EncodeError};
+use bincode::{BorrowDecode, Decode, Encode};
 use core::ops::{Deref, DerefMut};
 use core::str::Utf8Error;
-use uniform_array_derive::UniformArray;
 
 /// Identification data as UTF-8 bytes.
-#[derive(
-    Encode, Decode, UniformArray, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash,
-)]
+#[derive(Encode, Decode, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[allow(clippy::module_name_repetitions)]
-#[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(C)]
 pub struct Identifier<const N: usize> {
+    /// The type of identifier.
+    pub code: IdentifierCode,
     /// The value (UTF-8).
     pub value: [u8; N],
+}
+
+/// Identifies the type of identifier.
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[allow(clippy::module_name_repetitions)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+#[repr(u8)]
+pub enum IdentifierCode {
+    /// Generic identification.
+    Generic = 0x00,
+    /// Identifies the maker.
+    Maker = 0x01,
+    /// Identifies the product.
+    Product = 0x02,
+    /// Identifies the revision.
+    Revision = 0x03,
+}
+
+impl Encode for IdentifierCode {
+    fn encode<E: Encoder>(&self, encoder: &mut E) -> Result<(), EncodeError> {
+        Encode::encode(&(*self as u8), encoder)
+    }
+}
+
+impl Decode for IdentifierCode {
+    fn decode<D: Decoder>(decoder: &mut D) -> Result<Self, DecodeError> {
+        let value: u8 = Decode::decode(decoder)?;
+        match value {
+            0x00 => Ok(IdentifierCode::Generic),
+            0x01 => Ok(IdentifierCode::Maker),
+            0x02 => Ok(IdentifierCode::Product),
+            0x03 => Ok(IdentifierCode::Revision),
+            _ => Err(DecodeError::Other("Unknown identifier code")),
+        }
+    }
+}
+
+impl<'a> BorrowDecode<'a> for IdentifierCode {
+    fn borrow_decode<D: BorrowDecoder<'a>>(decoder: &mut D) -> Result<Self, DecodeError> {
+        IdentifierCode::decode(decoder)
+    }
 }
 
 impl<const N: usize> Default for Identifier<N> {
     fn default() -> Self {
         Self {
+            code: IdentifierCode::Generic,
             value: [0x20; N], // ASCII spaces
         }
     }
@@ -27,12 +70,12 @@ impl<const N: usize> Default for Identifier<N> {
 impl<const N: usize> Identifier<N> {
     /// Initializes a new [`Identifier`] instance.
     #[must_use]
-    pub fn new(value: &str) -> Self {
+    pub fn new(code: IdentifierCode, value: &str) -> Self {
         let mut array = [0x20; N];
         let source_range = ..value.len().min(array.len());
         let chars = value.as_bytes();
         array[source_range].copy_from_slice(&chars[source_range]);
-        Self { value: array }
+        Self { code, value: array }
     }
 
     /// Returns the value as a string.
@@ -46,7 +89,7 @@ impl<const N: usize> Identifier<N> {
 
 impl<const N: usize> From<&str> for Identifier<N> {
     fn from(value: &str) -> Self {
-        Identifier::new(value)
+        Identifier::new(IdentifierCode::Generic, value)
     }
 }
 
@@ -72,7 +115,7 @@ mod tests {
     #[test]
     #[allow(clippy::expect_used)]
     fn test_identifier_serialization() {
-        let input_data = Identifier::<64>::new("LSM303DLHC");
+        let input_data = Identifier::<64>::new(IdentifierCode::Product, "LSM303DLHC");
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
@@ -83,7 +126,7 @@ mod tests {
                 .expect("Failed to serialize");
 
         // Ensure the serialized length is correct
-        assert_eq!(num_serialized, 64);
+        assert_eq!(num_serialized, 65);
 
         // Deserialize the data
         let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
@@ -93,13 +136,13 @@ mod tests {
 
         // Ensure the deserialized content is correct
         assert_eq!(deserialized, input_data);
-        assert_eq!(count, 64);
+        assert_eq!(count, 65);
     }
 
     #[test]
     #[allow(clippy::expect_used)]
     fn test_index() {
-        let reading = Identifier::<64>::new("abcde");
+        let reading = Identifier::<64>::new(IdentifierCode::Generic, "abcde");
 
         let value = core::str::from_utf8(&reading.value).expect("invalid coding");
 
@@ -107,7 +150,7 @@ mod tests {
             value,
             "abcde                                                           "
         );
-        assert_eq!(reading.len(), 1);
+        assert_eq!(reading.len(), 64);
         assert!(!reading.is_empty());
     }
 }
