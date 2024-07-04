@@ -8,6 +8,9 @@ use bincode::{Decode, Encode};
 pub struct SensorId(pub(crate) u16, pub(crate) u8, pub(crate) ValueType);
 
 impl SensorId {
+    /// A generic identifier, e.g. for describing a carrier board.
+    pub const META_IDENTIFIER: SensorId = SensorId(0x00, 0, ValueType::Identifier);
+
     /// Constructs a new sensor ID.
     #[must_use]
     pub const fn new_with(sensor_tag: u16, sensor_type_id: u8, value_type: ValueType) -> Self {
