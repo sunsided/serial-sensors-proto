@@ -31,7 +31,7 @@ struct Version1Data {
 }
 
 #[proc_macro_derive(SerialSensors, attributes(sensor))]
-pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
+pub fn derive_serial_sensors(input: TokenStream) -> TokenStream {
     let input = parse_macro_input!(input as DeriveInput);
     let version1_data = Version1Data::from_derive_input(&input).expect("Failed to parse input");
 
@@ -250,8 +250,21 @@ pub fn derive_sensor_data_type(input: TokenStream) -> TokenStream {
         quote! {
             impl #name {
                 /// Constructs a new instance of the [`#name`] type.
+                #[must_use]
                 pub const fn new(value: #field) -> Self {
                     Self(value)
+                }
+
+                /// Returns a reference to the inner value.
+                #[must_use]
+                pub fn inner(&self) -> &#field {
+                    &self.0
+                }
+
+                /// Consumes self and returns the contained value.
+                #[must_use]
+                pub const fn into_inner(self) -> #field {
+                    self.0
                 }
             }
 
