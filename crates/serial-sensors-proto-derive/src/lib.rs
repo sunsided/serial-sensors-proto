@@ -121,8 +121,14 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
             });
 
             let upper_variant = format_ident!("{}", variant_name.to_string().to_uppercase());
+
+            let type_name_str = name.to_string();
+            let name = quote! { concat!{ "[`", #type_name_str, "::", #variant_name_str, "`]" } };
             sensor_ids_variants.push(quote! {
-                const #upper_variant : SensorId = SensorId(0x00, #sensor_type, #field_type);
+                /// [`SensorId`] const for the
+                #[doc = #name ]
+                /// type.
+                pub const #upper_variant : SensorId = SensorId(0x00, #sensor_type, #field_type);
             });
         }
     }
