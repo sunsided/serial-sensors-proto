@@ -33,11 +33,13 @@ use bincode::Encode;
 use serial_sensors_proto_derive::SerialSensors;
 
 mod data_types;
+mod sensor_id;
 mod serializer;
 pub mod types;
 pub mod versions;
 
 pub use data_types::*;
+pub use sensor_id::*;
 pub use serializer::*;
 
 /// A protocol version.

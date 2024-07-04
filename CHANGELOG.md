@@ -8,6 +8,7 @@ This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 ### Added
 
 - Types, where possible, now implement `Ord`, `PartialOrd` and `Hash`.
+- Added the `SensorId` type.
 
 ## [0.2.3] - 2024-07-03
 
