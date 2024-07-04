@@ -27,6 +27,10 @@ pub struct LinearRanges {
     /// The number of decimal points in `meas_range_max` and `meas_range_min`, used
     /// to express fractional numbers. Used to scale the values by 10^`range_decimals`.
     pub range_decimals: u8,
+    /// An offset value on the calculated result.
+    pub offset: i32,
+    /// The number of decimal points for the `offset`.
+    pub offset_decimals: u8,
 }
 
 #[cfg(test)]
