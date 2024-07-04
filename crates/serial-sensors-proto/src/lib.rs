@@ -30,6 +30,7 @@
 )]
 
 use bincode::Encode;
+use core::fmt::Formatter;
 use serial_sensors_proto_derive::SerialSensors;
 
 mod data_types;
@@ -213,6 +214,24 @@ where
         })
     }
 }
+
+/// A component lookup error.
+#[derive(Debug, Eq, PartialEq)]
+pub enum ComponentLookupError {
+    /// The type was unknown.
+    UnknownType,
+}
+
+impl core::fmt::Display for ComponentLookupError {
+    fn fmt(&self, f: &mut Formatter<'_>) -> core::fmt::Result {
+        match self {
+            ComponentLookupError::UnknownType => f.write_str("Unknown type"),
+        }
+    }
+}
+
+#[cfg(feature = "std")]
+impl std::error::Error for ComponentLookupError {}
 
 #[cfg(test)]
 mod tests {

@@ -43,6 +43,7 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
     let mut from_impls = Vec::new();
     let mut encode_match_arms = Vec::new();
     let mut decode_match_arms = Vec::new();
+    let mut components_lookup_match_arms = Vec::new();
 
     let mut sensor_types = HashSet::new();
     let mut duplicate_error = None;
@@ -113,6 +114,10 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                     Ok(#name :: #variant_name ( value ))
                 }
             });
+
+            components_lookup_match_arms.push(quote! {
+                (#sensor_type, #field_type) => Ok(#num_components),
+            });
         }
     }
 
@@ -139,6 +144,14 @@ pub fn derive_runtime_type_information(input: TokenStream) -> TokenStream {
                 pub const fn num_components(&self) -> u8 {
                     match self {
                         #( #num_components_match_arms )*
+                    }
+                }
+
+                /// Provides the number of components of the data type.
+                pub const fn components(sensor_id: u8, value_type: crate::ValueType) -> Result<u8, crate::ComponentLookupError> {
+                    match (sensor_id, value_type) {
+                        #( #components_lookup_match_arms )*
+                        _ => Err(ComponentLookupError::UnknownType)
                     }
                 }
             }

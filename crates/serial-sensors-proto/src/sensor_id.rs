@@ -1,10 +1,10 @@
 use crate::versions::Version1DataFrame;
-use crate::{RuntimeTypeInformation, ValueType};
+use crate::{ComponentLookupError, SensorData, ValueType};
 
 /// Identifies a sensor.
 #[derive(Debug, Clone, Eq, PartialEq, Hash)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub struct SensorId(u16, u8, ValueType, u8);
+pub struct SensorId(u16, u8, ValueType);
 
 impl SensorId {
     /// Constructs a new sensor ID from a [`Version1DataFrame`].
@@ -14,7 +14,6 @@ impl SensorId {
             frame.sensor_tag,
             frame.value.sensor_type_id(),
             frame.value.value_type(),
-            frame.value.num_components(),
         )
     }
 
@@ -37,28 +36,16 @@ impl SensorId {
     }
 
     /// Returns the number of components of the vector.
-    #[must_use]
-    pub fn num_components(&self) -> u8 {
-        self.3
+    ///
+    /// ## Errors
+    /// The type could not be looked up.
+    pub fn num_components(&self) -> Result<u8, ComponentLookupError> {
+        SensorData::components(self.1, self.2)
     }
 }
 
 impl From<&Version1DataFrame> for SensorId {
     fn from(value: &Version1DataFrame) -> Self {
         Self::from(value)
-    }
-}
-
-impl RuntimeTypeInformation for SensorId {
-    fn sensor_type_id(&self) -> u8 {
-        self.id()
-    }
-
-    fn value_type(&self) -> ValueType {
-        self.value_type()
-    }
-
-    fn num_components(&self) -> u8 {
-        self.num_components()
     }
 }
