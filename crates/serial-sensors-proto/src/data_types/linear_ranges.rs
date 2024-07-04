@@ -64,6 +64,20 @@ mod tests {
 
     #[test]
     #[cfg(feature = "std")]
+    fn test_calibrate_mag() {
+        let mag_data = LinearRanges {
+            target: SensorId::default(),
+            resolution_bits: 12,
+            scale: 1100,
+            ..Default::default()
+        };
+
+        let result = mag_data.transform(384.0);
+        assert_eq!(result, 0.3490909);
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
     fn test_calibrate_accel() {
         let mag_data = LinearRanges {
             target: SensorId::default(),
