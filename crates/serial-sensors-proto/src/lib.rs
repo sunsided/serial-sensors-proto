@@ -102,7 +102,11 @@ pub enum SensorData {
     OrientationQuaternionF32(types::OrientationQuaternionF32),
 
     /// Identification data.
-    #[sensor(id = 0xFF, data = ValueType::UInt8, components = 64)]
+    #[sensor(id = 0xFE, data = ValueType::LinearRange, components = 1)]
+    LinearRanges(types::LinearRanges),
+
+    /// Identification data.
+    #[sensor(id = 0xFF, data = ValueType::Identifier, components = 64)]
     Identification(types::Identification),
 }
 
@@ -141,6 +145,10 @@ pub enum ValueType {
     Q16_16 = 0x0E,
     /// 64-bit fixed-point format, Q32.32 (I32F32)
     Q32_32 = 0x0F,
+    /// A value range description.
+    LinearRange = 0xFE,
+    /// An identifier.
+    Identifier = 0xFF,
 }
 
 impl TryFrom<u8> for ValueType {
@@ -163,6 +171,8 @@ impl TryFrom<u8> for ValueType {
             0x0D => Ok(Self::Q8_8),
             0x0E => Ok(Self::Q16_16),
             0x0F => Ok(Self::Q32_32),
+            0xFE => Ok(Self::LinearRange),
+            0xFF => Ok(Self::Identifier),
             _ => Err(()),
         }
     }

@@ -1,8 +1,9 @@
 use bincode::{Decode, Encode};
 use core::ops::{Deref, DerefMut};
+use core::str::Utf8Error;
 use uniform_array_derive::UniformArray;
 
-/// Identification data.
+/// Identification data as UTF-8 bytes.
 #[derive(
     Encode, Decode, UniformArray, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash,
 )]
@@ -10,46 +11,54 @@ use uniform_array_derive::UniformArray;
 #[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(C)]
-pub struct Identifier {
-    /// The value.
-    pub value: [u8; 64],
+pub struct Identifier<const N: usize> {
+    /// The value (UTF-8).
+    pub value: [u8; N],
 }
 
-impl Default for Identifier {
+impl<const N: usize> Default for Identifier<N> {
     fn default() -> Self {
         Self {
-            value: [0x20; 64], // ASCII spaces
+            value: [0x20; N], // ASCII spaces
         }
     }
 }
 
-impl Identifier {
+impl<const N: usize> Identifier<N> {
     /// Initializes a new [`Identifier`] instance.
     #[must_use]
     pub fn new(value: &str) -> Self {
-        let mut array = [0x20; 64];
+        let mut array = [0x20; N];
         let source_range = ..value.len().min(array.len());
         let chars = value.as_bytes();
         array[source_range].copy_from_slice(&chars[source_range]);
         Self { value: array }
     }
+
+    /// Returns the value as a string.
+    ///
+    /// ## Errors
+    /// Returns an error if the value did not contain valid UTF data.
+    pub fn as_str(&self) -> Result<&str, Utf8Error> {
+        core::str::from_utf8(&self.value)
+    }
 }
 
-impl From<&str> for Identifier {
+impl<const N: usize> From<&str> for Identifier<N> {
     fn from(value: &str) -> Self {
         Identifier::new(value)
     }
 }
 
-impl Deref for Identifier {
-    type Target = [u8; 64];
+impl<const N: usize> Deref for Identifier<N> {
+    type Target = [u8; N];
 
     fn deref(&self) -> &Self::Target {
         &self.value
     }
 }
 
-impl DerefMut for Identifier {
+impl<const N: usize> DerefMut for Identifier<N> {
     fn deref_mut(&mut self) -> &mut Self::Target {
         &mut self.value
     }
@@ -63,7 +72,7 @@ mod tests {
     #[test]
     #[allow(clippy::expect_used)]
     fn test_identifier_serialization() {
-        let input_data = Identifier::new("LSM303DLHC");
+        let input_data = Identifier::<64>::new("LSM303DLHC");
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
@@ -79,7 +88,7 @@ mod tests {
         // Deserialize the data
         let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
             .expect("Failed to deserialize");
-        let deserialized: Identifier = result.0;
+        let deserialized: Identifier<64> = result.0;
         let count = result.1;
 
         // Ensure the deserialized content is correct
@@ -90,7 +99,7 @@ mod tests {
     #[test]
     #[allow(clippy::expect_used)]
     fn test_index() {
-        let reading = Identifier::new("abcde");
+        let reading = Identifier::<64>::new("abcde");
 
         let value = core::str::from_utf8(&reading.value).expect("invalid coding");
 
