@@ -2,7 +2,9 @@ use bincode::{Decode, Encode};
 use uniform_array_derive::UniformArray;
 
 /// A three-dimensional vector.
-#[derive(Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(
+    Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash,
+)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]

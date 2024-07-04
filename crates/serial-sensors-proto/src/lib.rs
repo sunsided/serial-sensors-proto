@@ -67,7 +67,7 @@ where
 }
 
 /// Data formats.
-#[derive(Debug, Clone, PartialEq, SerialSensors)]
+#[derive(Debug, Clone, PartialEq, SerialSensors, PartialOrd)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum SensorData {
     /// The system clock frequency, expressed in Hertz (Hz).
@@ -100,30 +100,7 @@ pub enum SensorData {
 }
 
 /// Sensor type tags.
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
-#[repr(u8)]
-#[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub enum SensorType {
-    /// The protocol version.
-    ProtocolVersion = 0x01,
-    /// The system clock frequency, expressed in Hertz (Hz).
-    SystemClockFrequency = 0x02,
-    /// A sensor that measures the gravity vector, typically expressed in "g".
-    Gravity = 0x42,
-    /// A sensor that measures magnetic field strength, typically expressed in units auf Milli-Gauss (mG).
-    MagneticFieldStrength = 0x43,
-    /// A sensor that measures temperature, typically expressed in °C.
-    Temperature = 0x44,
-    /// A sensor that measures angular acceleration, typically expressed in degrees/second.
-    AngularAcceleration = 0x45,
-    /// Euler angles, in radians.
-    EulerAngles = 0xF0,
-    /// An orientation quaternion.
-    OrientationQuaternion = 0xF1,
-}
-
-/// Sensor type tags.
-#[derive(Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[repr(u8)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub enum ValueType {

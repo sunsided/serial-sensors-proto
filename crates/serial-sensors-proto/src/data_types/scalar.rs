@@ -2,7 +2,9 @@ use bincode::{Decode, Encode};
 use uniform_array_derive::UniformArray;
 
 /// Scalar data.
-#[derive(Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(
+    Encode, Decode, UniformArray, Default, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash,
+)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(test, ensure_uniform_type::ensure_uniform_type)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
@@ -78,10 +80,11 @@ mod tests {
     }
 
     #[test]
+    #[allow(clippy::float_cmp)]
     fn test_index() {
-        let reading = ScalarData::<u32> { value: 12 };
+        let reading = ScalarData::<f32> { value: 12.0 };
 
-        assert_eq!(reading[0], 12);
+        assert_eq!(reading[0], 12.0);
         assert_eq!(reading.len(), 1);
         assert!(!reading.is_empty());
     }
