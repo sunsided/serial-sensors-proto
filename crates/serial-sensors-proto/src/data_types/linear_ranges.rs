@@ -1,12 +1,15 @@
+use crate::SensorId;
 use bincode::{Decode, Encode};
 
 /// Value interpretation information for linear value readings with uniform behavior
 /// across all axes.
-#[derive(Encode, Decode, Default, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Encode, Decode, Default, Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(C)]
 pub struct LinearRanges {
+    /// Which sensor does this identify?
+    pub target: SensorId,
     /// Number of bits per axis.
     ///
     /// A value could be represented using 16 bits, but only have 12 bit range.
@@ -35,6 +38,7 @@ mod tests {
     #[allow(clippy::expect_used)]
     fn test_accelerometer_data_i16_serialization() {
         let accel_data = LinearRanges {
+            target: SensorId::default(),
             resolution_bits: 12,
             lsb_per_unit: 1100,
             meas_range_max: 13,
@@ -51,7 +55,7 @@ mod tests {
                 .expect("Failed to serialize");
 
         // Ensure the serialized length is correct
-        assert_eq!(num_serialized, 15);
+        assert_eq!(num_serialized, 19);
 
         // Deserialize the data
         let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
@@ -61,6 +65,6 @@ mod tests {
 
         // Ensure the deserialized content is correct
         assert_eq!(deserialized.lsb_per_unit, 1100);
-        assert_eq!(count, 15);
+        assert_eq!(count, 19);
     }
 }

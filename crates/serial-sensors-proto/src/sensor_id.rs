@@ -1,12 +1,19 @@
 use crate::versions::Version1DataFrame;
 use crate::{ComponentLookupError, SensorData, ValueType};
+use bincode::{Decode, Encode};
 
 /// Identifies a sensor.
-#[derive(Debug, Clone, Eq, PartialEq, Hash)]
+#[derive(Encode, Decode, Default, Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub struct SensorId(u16, u8, ValueType);
+pub struct SensorId(pub(crate) u16, pub(crate) u8, pub(crate) ValueType);
 
 impl SensorId {
+    /// Constructs a new sensor ID.
+    #[must_use]
+    pub const fn new_with(sensor_tag: u16, sensor_type_id: u8, value_type: ValueType) -> Self {
+        Self(sensor_tag, sensor_type_id, value_type)
+    }
+
     /// Constructs a new sensor ID from a [`Version1DataFrame`].
     #[must_use]
     pub fn from(frame: &Version1DataFrame) -> Self {

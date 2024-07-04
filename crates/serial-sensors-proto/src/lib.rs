@@ -29,7 +29,10 @@
     unused_qualifications
 )]
 
-use bincode::Encode;
+use bincode::de::{BorrowDecoder, Decoder};
+use bincode::enc::Encoder;
+use bincode::error::{DecodeError, EncodeError};
+use bincode::{BorrowDecode, Decode, Encode};
 use core::fmt::Formatter;
 use serial_sensors_proto_derive::SerialSensors;
 
@@ -178,6 +181,33 @@ impl TryFrom<u8> for ValueType {
     }
 }
 
+impl Encode for ValueType {
+    fn encode<E: Encoder>(&self, encoder: &mut E) -> Result<(), EncodeError> {
+        Encode::encode(&(*self as u8), encoder)
+    }
+}
+
+impl Decode for ValueType {
+    fn decode<D: Decoder>(decoder: &mut D) -> Result<Self, DecodeError> {
+        let value: u8 = Decode::decode(decoder)?;
+        ValueType::try_from(value).map_err(|()| DecodeError::Other("Unknown type variant"))
+    }
+}
+
+impl<'de> BorrowDecode<'de> for ValueType {
+    fn borrow_decode<D: BorrowDecoder<'de>>(decoder: &mut D) -> Result<Self, DecodeError> {
+        let value: u8 = Decode::decode(decoder)?;
+        ValueType::try_from(value).map_err(|()| DecodeError::Other("Unknown type variant"))
+    }
+}
+
+#[allow(clippy::derivable_impls)]
+impl Default for ValueType {
+    fn default() -> Self {
+        ValueType::Identifier
+    }
+}
+
 /// Sensor type information.
 pub trait CompileTimeTypeInformation: Default {
     /// The sensor type.
@@ -210,7 +240,7 @@ where
 }
 
 /// Marker type for data frames.
-pub trait DataFrame: Sized + bincode::Decode {
+pub trait DataFrame: Sized + Decode {
     /// The protocol version used by this data frame.
     type ProtocolVersion: ProtocolVersion;
 
@@ -223,17 +253,15 @@ pub trait DataFrame: Sized + bincode::Decode {
     }
 }
 
-impl<V, D> bincode::Decode for VersionedDataFrame<V, D>
+impl<V, D> Decode for VersionedDataFrame<V, D>
 where
     V: ProtocolVersion + ::bincode::Decode,
     D: DataFrame,
 {
-    fn decode<__D: bincode::de::Decoder>(
-        decoder: &mut __D,
-    ) -> Result<Self, ::bincode::error::DecodeError> {
+    fn decode<__D: Decoder>(decoder: &mut __D) -> Result<Self, ::bincode::error::DecodeError> {
         Ok(Self {
-            version: bincode::Decode::decode(decoder)?,
-            data: bincode::Decode::decode(decoder)?,
+            version: Decode::decode(decoder)?,
+            data: Decode::decode(decoder)?,
         })
     }
 }

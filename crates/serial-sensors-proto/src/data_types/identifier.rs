@@ -1,3 +1,4 @@
+use crate::{SensorId, ValueType};
 use bincode::de::{BorrowDecoder, Decoder};
 use bincode::enc::Encoder;
 use bincode::error::{DecodeError, EncodeError};
@@ -6,11 +7,13 @@ use core::ops::{Deref, DerefMut};
 use core::str::Utf8Error;
 
 /// Identification data as UTF-8 bytes.
-#[derive(Encode, Decode, Debug, Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
+#[derive(Encode, Decode, Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[allow(clippy::module_name_repetitions)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 #[repr(C)]
 pub struct Identifier<const N: usize> {
+    /// Which sensor does this identify?
+    pub target: SensorId,
     /// The type of identifier.
     pub code: IdentifierCode,
     /// The value (UTF-8).
@@ -61,6 +64,7 @@ impl<'a> BorrowDecode<'a> for IdentifierCode {
 impl<const N: usize> Default for Identifier<N> {
     fn default() -> Self {
         Self {
+            target: SensorId(0, 0, ValueType::Identifier),
             code: IdentifierCode::Generic,
             value: [0x20; N], // ASCII spaces
         }
@@ -70,12 +74,16 @@ impl<const N: usize> Default for Identifier<N> {
 impl<const N: usize> Identifier<N> {
     /// Initializes a new [`Identifier`] instance.
     #[must_use]
-    pub fn new(code: IdentifierCode, value: &str) -> Self {
+    pub fn new(target: SensorId, code: IdentifierCode, value: &str) -> Self {
         let mut array = [0x20; N];
         let source_range = ..value.len().min(array.len());
         let chars = value.as_bytes();
         array[source_range].copy_from_slice(&chars[source_range]);
-        Self { code, value: array }
+        Self {
+            target,
+            code,
+            value: array,
+        }
     }
 
     /// Returns the value as a string.
@@ -89,7 +97,7 @@ impl<const N: usize> Identifier<N> {
 
 impl<const N: usize> From<&str> for Identifier<N> {
     fn from(value: &str) -> Self {
-        Identifier::new(IdentifierCode::Generic, value)
+        Identifier::new(SensorId::default(), IdentifierCode::Generic, value)
     }
 }
 
@@ -115,18 +123,19 @@ mod tests {
     #[test]
     #[allow(clippy::expect_used)]
     fn test_identifier_serialization() {
-        let input_data = Identifier::<64>::new(IdentifierCode::Product, "LSM303DLHC");
+        let input_data =
+            Identifier::<64>::new(SensorId::default(), IdentifierCode::Product, "LSM303DLHC");
 
         // The deserialization target buffer.
         let mut buffer = [0_u8; 1024];
 
         // Serialize the data
         let num_serialized =
-            bincode::encode_into_slice(input_data, &mut buffer, SERIALIZATION_CONFIG)
+            bincode::encode_into_slice(input_data.clone(), &mut buffer, SERIALIZATION_CONFIG)
                 .expect("Failed to serialize");
 
         // Ensure the serialized length is correct
-        assert_eq!(num_serialized, 65);
+        assert_eq!(num_serialized, 69);
 
         // Deserialize the data
         let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
@@ -136,13 +145,13 @@ mod tests {
 
         // Ensure the deserialized content is correct
         assert_eq!(deserialized, input_data);
-        assert_eq!(count, 65);
+        assert_eq!(count, 69);
     }
 
     #[test]
     #[allow(clippy::expect_used)]
     fn test_index() {
-        let reading = Identifier::<64>::new(IdentifierCode::Generic, "abcde");
+        let reading = Identifier::<64>::new(SensorId::default(), IdentifierCode::Generic, "abcde");
 
         let value = core::str::from_utf8(&reading.value).expect("invalid coding");
 
