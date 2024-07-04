@@ -14,23 +14,33 @@ pub struct LinearRanges {
     ///
     /// A value could be represented using 16 bits, but only have 12 bit range.
     pub resolution_bits: u16,
-    /// The value change per change in measurable unit.
-    /// For example, 1100 LSB/Gauss imply that for every change of 1100 decimal values,
-    /// the physical reading changes by 1 Gauss.
-    pub lsb_per_unit: u32,
-    /// The maximum measurable value.
-    /// This is in terms of physical units, not in terms of bit representation.
-    pub meas_range_max: i32,
-    /// The minimum measurable value.
-    /// This is in terms of physical units, not in terms of bit representation.
-    pub meas_range_min: i32,
+    /// The type of scale operation. Currently, it always implies a division.
+    pub scale_op: u8,
+    /// The amount by which to scale the value.
+    pub scale: i32,
     /// The number of decimal points in `meas_range_max` and `meas_range_min`, used
     /// to express fractional numbers. Used to scale the values by 10^`range_decimals`.
-    pub range_decimals: u8,
-    /// An offset value on the calculated result.
+    pub scale_decimals: u8,
+    /// The amount by which to offset the value.
     pub offset: i32,
     /// The number of decimal points for the `offset`.
     pub offset_decimals: u8,
+}
+
+impl LinearRanges {
+    /// Calibrates a value using a [`LinearRangeInfo`]
+    #[cfg(feature = "std")]
+    #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+    #[must_use]
+    pub fn transform(&self, value: f32) -> f32 {
+        let scale = self.scale as f32 / 10.0_f32.powi(self.scale_decimals as _);
+        if self.offset != 0 {
+            let offset = self.offset as f32 / 10.0_f32.powi(self.offset_decimals as _);
+            value / scale + offset
+        } else {
+            value / scale
+        }
+    }
 }
 
 #[cfg(test)]
@@ -39,15 +49,40 @@ mod tests {
     use crate::serializer::SERIALIZATION_CONFIG;
 
     #[test]
-    #[allow(clippy::expect_used)]
-    fn test_accelerometer_data_i16_serialization() {
-        let accel_data = LinearRanges {
+    #[cfg(feature = "std")]
+    fn test_calibrate_temp() {
+        let mag_data = LinearRanges {
             target: SensorId::default(),
             resolution_bits: 12,
-            lsb_per_unit: 1100,
-            meas_range_max: 13,
-            meas_range_min: 13,
-            range_decimals: 1,
+            scale: 16384,
+            ..Default::default()
+        };
+
+        let result = mag_data.transform(16640.0);
+        assert_eq!(result, 1.015625);
+    }
+
+    #[test]
+    #[cfg(feature = "std")]
+    fn test_calibrate_accel() {
+        let mag_data = LinearRanges {
+            target: SensorId::default(),
+            resolution_bits: 12,
+            scale: 8,
+            offset: 20,
+            ..Default::default()
+        };
+
+        let result = mag_data.transform(73.0);
+        assert_eq!(result, 29.125);
+    }
+
+    #[test]
+    #[allow(clippy::expect_used)]
+    fn test_accelerometer_data_i16_serialization() {
+        let mag_data = LinearRanges {
+            target: SensorId::default(),
+            resolution_bits: 12,
             ..Default::default()
         };
 
@@ -56,11 +91,11 @@ mod tests {
 
         // Serialize the data
         let num_serialized =
-            bincode::encode_into_slice(accel_data, &mut buffer, SERIALIZATION_CONFIG)
+            bincode::encode_into_slice(mag_data, &mut buffer, SERIALIZATION_CONFIG)
                 .expect("Failed to serialize");
 
         // Ensure the serialized length is correct
-        assert_eq!(num_serialized, 19);
+        assert_eq!(num_serialized, 17);
 
         // Deserialize the data
         let result = bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG)
@@ -69,7 +104,7 @@ mod tests {
         let count = result.1;
 
         // Ensure the deserialized content is correct
-        assert_eq!(deserialized.lsb_per_unit, 1100);
-        assert_eq!(count, 19);
+        assert_eq!(deserialized.resolution_bits, 12);
+        assert_eq!(count, 17);
     }
 }
