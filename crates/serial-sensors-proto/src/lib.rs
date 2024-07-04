@@ -100,6 +100,10 @@ pub enum SensorData {
     /// An orientation quaternion.
     #[sensor(id = 0xF1, data = ValueType::Float32, components = 4)]
     OrientationQuaternionF32(types::OrientationQuaternionF32),
+
+    /// Identification data.
+    #[sensor(id = 0xFF, data = ValueType::UInt8, components = 64)]
+    Identification(types::Identification),
 }
 
 /// Sensor type tags.

@@ -102,3 +102,10 @@ pub struct EulerAnglesF32(crate::Vector3Data<f32>);
 #[derive(SensorDataType, Encode, Decode, Debug, Default, Copy, Clone, PartialEq, PartialOrd)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct OrientationQuaternionF32(crate::Vector4Data<f32>);
+
+/// An identifier.
+#[derive(
+    SensorDataType, Encode, Decode, Debug, Default, Copy, Clone, Eq, PartialEq, Ord, PartialOrd,
+)]
+#[cfg_attr(feature = "defmt", derive(defmt::Format))]
+pub struct Identification(crate::Identifier);
