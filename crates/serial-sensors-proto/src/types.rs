@@ -111,4 +111,4 @@ pub struct Identification(crate::Identifier<64>);
 /// Linear value range description.
 #[derive(SensorDataType, Encode, Decode, Debug, Default, Clone, Eq, PartialEq, Ord, PartialOrd)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub struct LinearRanges(crate::LinearRanges);
+pub struct LinearRangeInfo(crate::LinearRanges);

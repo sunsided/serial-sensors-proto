@@ -106,7 +106,7 @@ pub enum SensorData {
 
     /// Identification data.
     #[sensor(id = 0xFE, data = ValueType::LinearRange, components = 1)]
-    LinearRanges(types::LinearRanges),
+    LinearRanges(types::LinearRangeInfo),
 
     /// Identification data.
     #[sensor(id = 0xFF, data = ValueType::Identifier, components = 64)]
