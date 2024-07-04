@@ -135,6 +135,12 @@ pub enum ValueType {
     Float32 = 0x0B,
     /// 64-bit floating point per component
     Float64 = 0x0C,
+    /// 16-bit fixed-point format, Q8.8 (I8F8)
+    Q8_8 = 0x0D,
+    /// 32-bit fixed-point format, Q16.16 (I16F16)
+    Q16_16 = 0x0E,
+    /// 64-bit fixed-point format, Q32.32 (I32F32)
+    Q32_32 = 0x0F,
 }
 
 impl TryFrom<u8> for ValueType {
@@ -154,6 +160,9 @@ impl TryFrom<u8> for ValueType {
             0x0A => Ok(Self::SInt128),
             0x0B => Ok(Self::Float32),
             0x0C => Ok(Self::Float64),
+            0x0D => Ok(Self::Q8_8),
+            0x0E => Ok(Self::Q16_16),
+            0x0F => Ok(Self::Q32_32),
             _ => Err(()),
         }
     }
