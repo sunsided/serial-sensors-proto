@@ -1,7 +1,7 @@
 //! A version 1 data frame.
 
 use crate::versions::Version1;
-use crate::{DataFrame, SensorData};
+use crate::{DataFrame, SensorData, SensorId};
 use bincode::Encode;
 
 /// A sensor data frame.
@@ -41,6 +41,13 @@ impl DataFrame for Version1DataFrame {
 
     fn is_meta(&self) -> bool {
         self.value.is_meta()
+    }
+
+    fn target(&self) -> SensorId {
+        self.value
+            .meta_target()
+            .cloned()
+            .unwrap_or_else(|| SensorId::from(self))
     }
 }
 

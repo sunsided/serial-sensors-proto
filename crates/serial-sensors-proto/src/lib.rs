@@ -194,6 +194,16 @@ impl SensorData {
             SensorData::LinearRanges(_) | SensorData::Identification(_)
         )
     }
+
+    /// Gets the embedded [`SensorId`] target of a metadata frame.
+    #[must_use]
+    pub fn meta_target(&self) -> Option<&SensorId> {
+        match self {
+            Self::LinearRanges(meta) => Some(&meta.target),
+            Self::Identification(meta) => Some(&meta.target),
+            _ => None,
+        }
+    }
 }
 
 impl Encode for ValueType {
@@ -269,6 +279,10 @@ pub trait DataFrame: Sized + Decode {
 
     /// Indicates whether the data resembles metadata.
     fn is_meta(&self) -> bool;
+
+    /// Gets the target Sensor ID for this frame.
+    /// This takes care of handling metadata frames correctly, as they embed their target IDs.
+    fn target(&self) -> SensorId;
 }
 
 impl<V, D> Decode for VersionedDataFrame<V, D>
