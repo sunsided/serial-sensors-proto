@@ -96,6 +96,10 @@ pub enum SensorData {
     #[sensor(id = 0x45, data = ValueType::SInt16, components = 1)]
     GyroscopeI16(types::GyroscopeI16),
 
+    /// A sensor that measures heading, i.e. degrees towards magnetic north.
+    #[sensor(id = 0x46, data = ValueType::UInt8, components = 1)]
+    HeadingU8(types::HeadingU8),
+
     /// Euler angles, in radians.
     #[sensor(id = 0xF0, data = ValueType::Float32, components = 3)]
     EulerAnglesF32(types::EulerAnglesF32),
