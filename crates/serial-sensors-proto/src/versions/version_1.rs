@@ -38,6 +38,10 @@ pub struct Version1DataFrame {
 
 impl DataFrame for Version1DataFrame {
     type ProtocolVersion = Version1;
+
+    fn is_meta(&self) -> bool {
+        self.value.is_meta()
+    }
 }
 
 impl Version1DataFrame {

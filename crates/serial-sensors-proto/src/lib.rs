@@ -181,6 +181,17 @@ impl TryFrom<u8> for ValueType {
     }
 }
 
+impl SensorData {
+    /// Indicates whether the data resembles metadata.
+    #[must_use]
+    pub fn is_meta(&self) -> bool {
+        matches!(
+            self,
+            SensorData::LinearRanges(_) | SensorData::Identification(_)
+        )
+    }
+}
+
 impl Encode for ValueType {
     fn encode<E: Encoder>(&self, encoder: &mut E) -> Result<(), EncodeError> {
         Encode::encode(&(*self as u8), encoder)
@@ -251,6 +262,9 @@ pub trait DataFrame: Sized + Decode {
             data: self,
         }
     }
+
+    /// Indicates whether the data resembles metadata.
+    fn is_meta(&self) -> bool;
 }
 
 impl<V, D> Decode for VersionedDataFrame<V, D>

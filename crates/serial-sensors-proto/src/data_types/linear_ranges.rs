@@ -48,6 +48,7 @@ mod tests {
             meas_range_max: 13,
             meas_range_min: 13,
             range_decimals: 1,
+            ..Default::default()
         };
 
         // The deserialization target buffer.
