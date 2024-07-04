@@ -103,7 +103,7 @@ pub struct EulerAnglesF32(crate::Vector3Data<f32>);
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct OrientationQuaternionF32(crate::Vector4Data<f32>);
 
-/// Heading angle towards magnetic north.
+/// Heading angle towards magnetic north, 0..360.
 #[derive(
     SensorDataType,
     Encode,
@@ -119,7 +119,7 @@ pub struct OrientationQuaternionF32(crate::Vector4Data<f32>);
     Hash,
 )]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
-pub struct HeadingU8(crate::ScalarData<u8>);
+pub struct HeadingI16(crate::ScalarData<i16>);
 
 /// An identifier.
 #[derive(SensorDataType, Encode, Decode, Debug, Default, Clone, Eq, PartialEq, Ord, PartialOrd)]
