@@ -20,10 +20,10 @@ pub struct LinearRanges {
     pub lsb_per_unit: u32,
     /// The maximum measurable value.
     /// This is in terms of physical units, not in terms of bit representation.
-    pub meas_range_max: u32,
+    pub meas_range_max: i32,
     /// The minimum measurable value.
     /// This is in terms of physical units, not in terms of bit representation.
-    pub meas_range_min: u32,
+    pub meas_range_min: i32,
     /// The number of decimal points in `meas_range_max` and `meas_range_min`, used
     /// to express fractional numbers. Used to scale the values by 10^`range_decimals`.
     pub range_decimals: u8,
