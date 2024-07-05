@@ -31,11 +31,12 @@ impl LinearRanges {
     /// Calibrates a value using a [`LinearRangeInfo`]
     #[cfg(feature = "std")]
     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
+    #[allow(clippy::cast_precision_loss)]
     #[must_use]
     pub fn transform(&self, value: f32) -> f32 {
-        let scale = self.scale as f32 / 10.0_f32.powi(self.scale_decimals as _);
+        let scale = self.scale as f32 / 10.0_f32.powi(i32::from(self.scale_decimals));
         if self.offset != 0 {
-            let offset = self.offset as f32 / 10.0_f32.powi(self.offset_decimals as _);
+            let offset = self.offset as f32 / 10.0_f32.powi(i32::from(self.offset_decimals));
             value / scale + offset
         } else {
             value / scale
