@@ -18,6 +18,11 @@ The approach is twofold:
 
 On the receiving end, the entire process runs in reverse.
 
+Apart from supporting some generic sensor types such as accelerometers, magnetometers, gyroscopes etc.,
+the format has some capabilities for self-description. If implemented, the sensor maker and name, as well as linear
+normalization factors can be sent over the wire once or periodically, allowing for automatic and sensor-agnostic
+conversion on the host.
+
 ---
 
 See [stm32f3disco-rust](https://github.com/sunsided/stm32f3disco-rust)
