@@ -3,7 +3,9 @@
 All notable changes to this project will be documented in this file.
 This project uses [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## Unreleased
+## [0.3.0] - 2024-07-05
+
+[0.3.0]: https://github.com/sunsided/serial-sensors-proto/releases/tag/v0.3.0
 
 ### Added
 
