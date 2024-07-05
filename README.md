@@ -29,7 +29,7 @@ See [stm32f3disco-rust](https://github.com/sunsided/stm32f3disco-rust)
 and [serial-sensors](https://github.com/sunsided/serial-sensors)
 for an example. Here's an example screenshot from that project, showing sensor data as it streams in:
 
-![An example output from serial-sensors TUI](https://raw.githubusercontent.com/sunsided/serial-sensors/main/readme/picture.jpg)
+![An example output from serial-sensors TUI](https://raw.githubusercontent.com/sunsided/serial-sensors/0d508a05291f4f7ca1f014dbd6de228dd9e03413/readme/picture.jpg)
 
 The device-side code can be as simple as this:
 
