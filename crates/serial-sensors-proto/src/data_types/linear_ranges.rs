@@ -28,12 +28,12 @@ pub struct LinearRanges {
 }
 
 impl LinearRanges {
-    /// Calibrates a value using a [`LinearRangeInfo`]
+    /// Converts a value using this instance's information.
     #[cfg(feature = "std")]
     #[cfg_attr(docsrs, doc(cfg(feature = "std")))]
     #[allow(clippy::cast_precision_loss)]
     #[must_use]
-    pub fn transform(&self, value: f32) -> f32 {
+    pub fn convert(&self, value: f32) -> f32 {
         let scale = self.scale as f32 / 10.0_f32.powi(i32::from(self.scale_decimals));
         if self.offset != 0 {
             let offset = self.offset as f32 / 10.0_f32.powi(i32::from(self.offset_decimals));
@@ -59,7 +59,7 @@ mod tests {
             ..Default::default()
         };
 
-        let result = mag_data.transform(16640.0);
+        let result = mag_data.convert(16640.0);
         assert_eq!(result, 1.015625);
     }
 
@@ -73,7 +73,7 @@ mod tests {
             ..Default::default()
         };
 
-        let result = mag_data.transform(384.0);
+        let result = mag_data.convert(384.0);
         assert_eq!(result, 0.3490909);
     }
 
@@ -88,7 +88,7 @@ mod tests {
             ..Default::default()
         };
 
-        let result = mag_data.transform(73.0);
+        let result = mag_data.convert(73.0);
         assert_eq!(result, 29.125);
     }
 

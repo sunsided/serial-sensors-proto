@@ -2,7 +2,7 @@ use crate::versions::Version1DataFrame;
 use crate::{ComponentLookupError, SensorData, ValueType};
 use bincode::{Decode, Encode};
 
-/// Identifies a sensor. See also [`SensorIds`].
+/// Identifies a sensor. See also [`SensorIds`](crate::SensorIds).
 #[derive(Encode, Decode, Default, Debug, Clone, Eq, PartialEq, Ord, PartialOrd, Hash)]
 #[cfg_attr(feature = "defmt", derive(defmt::Format))]
 pub struct SensorId(pub(crate) u16, pub(crate) u8, pub(crate) ValueType);

@@ -27,7 +27,11 @@ conversion on the host.
 
 See [stm32f3disco-rust](https://github.com/sunsided/stm32f3disco-rust)
 and [serial-sensors](https://github.com/sunsided/serial-sensors)
-for an example. YMMV, but this is how it could work:
+for an example. Here's an example screenshot from that project, showing sensor data as it streams in:
+
+![An example output from serial-sensors TUI](https://raw.githubusercontent.com/sunsided/serial-sensors/main/readme/picture.jpg)
+
+The device-side code can be as simple as this:
 
 ```rust
 fn example() {
