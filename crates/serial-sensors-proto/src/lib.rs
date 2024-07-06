@@ -326,6 +326,9 @@ mod tests {
     #[test]
     fn frame_from_version() {
         let _frame = Version1::frame(Version1DataFrame {
+            system_secs: u32::MAX,
+            system_millis: u16::MAX,
+            system_nanos: u16::MAX,
             global_sequence: u32::MAX,
             sensor_sequence: u32::MAX,
             sensor_tag: 0,
@@ -336,6 +339,9 @@ mod tests {
     #[test]
     fn into_versioned() {
         let frame = Version1DataFrame::new(
+            u32::MAX,
+            u16::MAX,
+            u16::MAX,
             u32::MAX,
             12,
             0,
@@ -354,7 +360,8 @@ mod tests {
                 .expect("Failed to encode");
         assert_eq!(
             num_serialized,
-            1 // version
+            8 // time
+            + 1 // version
                        + 4 // global sequence
                        + 4 // sensor sequence
                        + 2 // sensor tag
@@ -367,7 +374,7 @@ mod tests {
         let (value, num_read) =
             bincode::decode_from_slice(&buffer, SERIALIZATION_CONFIG).expect("Failed to decode");
         let value: VersionedDataFrame<Version1, Version1DataFrame> = value;
-        assert_eq!(num_read, 19);
+        assert_eq!(num_read, 27);
         assert_eq!(value.version, Version1);
         assert_eq!(value.data.global_sequence, u32::MAX);
         assert_eq!(value.data.sensor_sequence, 12);

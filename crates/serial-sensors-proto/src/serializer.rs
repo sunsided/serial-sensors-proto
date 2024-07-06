@@ -120,13 +120,13 @@ mod tests {
     #[test]
     fn test_serialize() {
         let value = AccelerometerI16::new(Vector3Data { x: 1, y: -2, z: 3 });
-        let frame = Version1DataFrame::new(u32::MAX, 12, 0, value);
+        let frame = Version1DataFrame::new(0, 0, 0, u32::MAX, 12, 0, value);
 
         // The serialization target buffer.
-        let mut buffer = [0_u8; 48];
+        let mut buffer = [0_u8; 64];
 
         let range = serialize(frame, &mut buffer).unwrap();
-        assert_eq!(range.len(), 21);
+        assert_eq!(range.len(), 29);
 
         // The deserialization target buffer.
         let (_read, data) = deserialize(&mut buffer[range]).unwrap();
