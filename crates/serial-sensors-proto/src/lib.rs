@@ -93,7 +93,7 @@ pub enum SensorData {
     TemperatureI16(types::TemperatureI16),
 
     /// A sensor that measures angular acceleration, typically expressed in degrees/second.
-    #[sensor(id = 0x45, data = ValueType::SInt16, components = 1)]
+    #[sensor(id = 0x45, data = ValueType::SInt16, components = 3)]
     GyroscopeI16(types::GyroscopeI16),
 
     /// A sensor that measures heading, i.e. degrees towards magnetic north (0..360).
