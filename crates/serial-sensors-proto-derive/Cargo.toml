@@ -14,7 +14,7 @@ readme = "../../README.md"
 syn = "2.0.68"
 quote = "1.0"
 proc-macro2 = "1.0"
-darling = "0.20.9"
+darling = "0.21.2"
 
 [lib]
 proc-macro = true
